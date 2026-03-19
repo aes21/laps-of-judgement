@@ -1,0 +1,15 @@
+# FastF1 cache
+cache/
+fastf1_cache/
+
+# R renv library
+renv/library/
+renv/staging/
+
+# Model outputs
+outputs/
+
+# Python
+__pycache__/
+*.pyc
+.env
