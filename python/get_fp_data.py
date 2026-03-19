@@ -47,7 +47,7 @@ def get_fp_data(year: int, output_dir: str = "data/processed") -> None:
     all_fp_laps = pd.concat(all_laps, ignore_index=True)
 
     Path(output_dir).mkdir(parents=True, exist_ok=True)
-    out_path = Path(output_dir) / f"all_fp_laps{year}.csv"
+    out_path = Path(output_dir) / f"all_fp_laps_{year}.csv"
     all_fp_laps.to_csv(out_path, index=False)
     print(f"\nSaved {year} practice data to {out_path}")
 
