@@ -11,8 +11,8 @@ parse_lap_times <- function(df) {
   df |>
     mutate(LapTime_sec = as.numeric(as.duration(hms(
       str_extract(LapTime, "\\d{2}:\\d{2}:\\d{2}\\.\\d+")
-    )), "seconds")) %>%
-    filter(!is.na(LapTime_sec)) %>%
+    )), "seconds")) |>
+    filter(!is.na(LapTime_sec)) |>
     mutate(LapStartDate = ymd_hms(LapStartDate))
 }
 
@@ -33,9 +33,9 @@ add_elapsed_time <- function(df) {
 #' @return A filtered data.frame of session laps.
 filter_qualifying_laps <- function(df) {
   df |>
-    group_by(Driver, Session, Stint) %>%
-    mutate(StintLength = n()) %>%
-    ungroup() %>%
+    group_by(Driver, Session, Stint) |>
+    mutate(StintLength = n()) |>
+    ungroup() |>
     filter(
       TrackStatus == 1,
       IsAccurate == "True",
@@ -43,6 +43,6 @@ filter_qualifying_laps <- function(df) {
       Compound == "SOFT",
       FreshTyre == "True",
       StintLength <= 4
-    ) %>%
+    ) |>
     mutate(Driver = factor(Driver), Team = factor(Team))
 }
