@@ -33,7 +33,11 @@ new_quali_data <- data.frame(
 # Make prediction
 # -----------------------------------------------------------------------------
 
-simulated_quali_laps <- posterior_predict(fit_quali, newdata = new_quali_data, allow_new_levels = TRUE)
+simulated_quali_laps <- posterior_predict(
+  fit_quali,
+  newdata = new_quali_data,
+  allow_new_levels = TRUE
+)
 
 # generate a predicted grid data.frame
 predicted_grid <- data.frame(
@@ -45,8 +49,9 @@ predicted_grid <- data.frame(
   mutate(Predicted_Grid_Position = row_number())
 
 # plot
-plot_path <- paste0("outputs/plots/predicted_grid_", event_name, ".png")
-dir.create("outputs/plots",
+pdf(NULL)
+plot_path <- paste0("plots/predicted_grid_", event_name, ".png")
+dir.create("plots",
            showWarnings = FALSE,
            recursive = TRUE)
 
@@ -62,9 +67,10 @@ predicted_grid <- predicted_grid |>
       sprintf("+%.3f", Gap)
     )
   ) |>
-  left_join(team_colours %>% select(Team, Colour), b = "Team")
+  left_join(team_colours |> select(Team, Colour), by = "Team")
 
-ggplot(predicted_grid, aes(x = Gap, y = reorder(Driver, -Predicted_Grid_Position))) +
+ggplot(predicted_grid,
+       aes(x = Gap, y = reorder(Driver, -Predicted_Grid_Position))) +
   geom_col(aes(fill = Colour), width = 0.65, colour = NA) +
   geom_text(
     aes(
@@ -79,7 +85,8 @@ ggplot(predicted_grid, aes(x = Gap, y = reorder(Driver, -Predicted_Grid_Position
   ) +
   scale_fill_identity() +
   scale_colour_identity() +
-  labs(title = "PREDICTED QUALIFYING ORDER", subtitle = "Gap to expected pole position") +
+  labs(title = "Predicted Qualifying Gaps") +
+  ylab("Driver") +
   theme_minimal()
 
 ggsave(plot_path)
