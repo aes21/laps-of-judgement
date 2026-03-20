@@ -33,3 +33,6 @@ Rscript R/model.R "Spanish Grand Prix" 2025
 ```bash
 Rscript R/predict.R "Spanish Grand Prix"
 ```
+A plot of the qualifying gap prediction is generated in: `plots/` :
+
+![Prediction](plots/predicted_grid_Spanish_Grand_Prix.png)
