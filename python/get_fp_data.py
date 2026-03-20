@@ -1,6 +1,5 @@
 import fastf1
 import pandas as pd
-import time
 import argparse
 from pathlib import Path
 
