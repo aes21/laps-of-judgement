@@ -1,5 +1,6 @@
 library(brms)
 library(dplyr)
+library(ggplot2)
 
 # -----------------------------------------------------------------------------
 # Args
@@ -15,7 +16,7 @@ event_name <- gsub(" ", "_", target_race)
 # Load data
 # -----------------------------------------------------------------------------
 
-fit_quali <- readRDS(paste0("outputs/fit_quali_",   event_name, ".rds"))
+fit_quali <- readRDS(paste0("outputs/fit_quali_", event_name, ".rds"))
 model_data_q <- readRDS(paste0("outputs/model_data_", event_name, ".rds"))
 
 # get drivers
@@ -32,11 +33,7 @@ new_quali_data <- data.frame(
 # Make prediction
 # -----------------------------------------------------------------------------
 
-simulated_quali_laps <- posterior_predict(
-  fit_quali,
-  newdata = new_quali_data,
-  allow_new_levels = TRUE
-)
+simulated_quali_laps <- posterior_predict(fit_quali, newdata = new_quali_data, allow_new_levels = TRUE)
 
 # generate a predicted grid data.frame
 predicted_grid <- data.frame(
@@ -47,9 +44,51 @@ predicted_grid <- data.frame(
   arrange(Predicted_Time) |>
   mutate(Predicted_Grid_Position = row_number())
 
+# plot
+plot_path <- paste0("outputs/plots/predicted_grid_", event_name, ".png")
+dir.create("outputs/plots",
+           showWarnings = FALSE,
+           recursive = TRUE)
+
+# colour index
+team_colours <- read.csv("data/team_colours.csv")
+
+predicted_grid <- predicted_grid |>
+  mutate(
+    Gap = Predicted_Time - min(Predicted_Time),
+    Gap_label = ifelse(
+      Predicted_Grid_Position == 1,
+      sprintf("%.3f", Predicted_Time),
+      sprintf("+%.3f", Gap)
+    )
+  ) |>
+  left_join(team_colours %>% select(Team, Colour), b = "Team")
+
+ggplot(predicted_grid, aes(x = Gap, y = reorder(Driver, -Predicted_Grid_Position))) +
+  geom_col(aes(fill = Colour), width = 0.65, colour = NA) +
+  geom_text(
+    aes(
+      label = Gap_label,
+      x = ifelse(Gap > 0.35, Gap - 0.01, Gap + 0.01),
+      hjust = ifelse(Gap > 0.35, 1, 0),
+      colour = ifelse(Gap > 0.35, "#FFFFFF", "#0D0D1A")
+    ),
+    family = "mono",
+    size = 3.1,
+    fontface = "bold"
+  ) +
+  scale_fill_identity() +
+  scale_colour_identity() +
+  labs(title = "PREDICTED QUALIFYING ORDER", subtitle = "Gap to expected pole position") +
+  theme_minimal()
+
+ggsave(plot_path)
+
 # save
 out_path <- paste0("outputs/predictions/predicted_grid_", event_name, ".csv")
-dir.create("outputs/predictions", showWarnings = FALSE, recursive = TRUE)
+dir.create("outputs/predictions",
+           showWarnings = FALSE,
+           recursive = TRUE)
 write.csv(predicted_grid, out_path, row.names = FALSE)
 
 print(predicted_grid)

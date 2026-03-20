@@ -1,4 +1,5 @@
 import fastf1
+from fastf1 import plotting
 import pandas as pd
 import argparse
 from pathlib import Path
@@ -22,6 +23,7 @@ def get_fp_data(year: int, output_dir: str = "data/processed") -> None:
     # define fp sessions
     practice_sessions = ["FP1", "FP2", "FP3"]
     all_laps = []
+    team_colours = {}
 
     # retrieve all available session lap data
     for event_name in events["EventName"]:
@@ -34,6 +36,12 @@ def get_fp_data(year: int, output_dir: str = "data/processed") -> None:
                 laps["Session"] = fp
                 all_laps.append(laps)
                 print(f" Loaded {event_name} {fp}")
+
+                # collect team colours
+                for team in plotting.list_team_names(session):
+                    if team not in team_colours:
+                        team_colours[team] = plotting.get_team_color(team, session)
+                    
             except ValueError:
                 continue
             except Exception as e:
@@ -49,6 +57,13 @@ def get_fp_data(year: int, output_dir: str = "data/processed") -> None:
     out_path = Path(output_dir) / f"all_fp_laps_{year}.csv"
     all_fp_laps.to_csv(out_path, index=False)
     print(f"\nSaved {year} practice data to {out_path}")
+
+    # save team colours
+    if team_colours:
+        colours_path = Path("data") / "team_colours.csv"
+        pd.DataFrame(
+            [{"Team": team, "Colour": colour} for team, colour in team_colours.items()]
+        ).to_csv(colours_path, index=False)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
