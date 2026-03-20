@@ -1,5 +1,5 @@
 # laps-of-judgement
-A simple F1 qualifying Bayesian inference performance predictor using data fetched from [FastF1](https://github.com/theOehrly/Fast-F1).
+An F1 qualifying Bayesian inference performance predictor using data fetched from [FastF1](https://github.com/theOehrly/Fast-F1).
 
 ## Getting started
 
