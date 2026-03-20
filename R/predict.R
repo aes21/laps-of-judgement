@@ -63,7 +63,8 @@ predicted_grid <- predicted_grid |>
     Gap = Predicted_Time - min(Predicted_Time),
     Gap_label = ifelse(
       Predicted_Grid_Position == 1,
-      sprintf("%d:%06.3f", floor(min(Predicted_Time) / 60), min(Predicted_Time) %% 60),
+      sprintf("%d:%06.3f", 
+              floor(min(Predicted_Time) / 60), min(Predicted_Time) %% 60),
       sprintf("+%.3f", Gap)
     )
   ) |>
