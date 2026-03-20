@@ -2,6 +2,10 @@
 cache/
 fastf1_cache/
 
+# R history data
+*.RData
+*.Rhistory
+
 # R renv library
 renv/library/
 renv/staging/
