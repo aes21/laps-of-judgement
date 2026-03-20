@@ -10,10 +10,10 @@ library(stringr)
 parse_lap_times <- function(df) {
   df |>
     mutate(LapTime_sec = as.numeric(as.duration(hms(
-      str_extract(LapTime, "\\d{2}:\\d{2}:\\d{2}\\.\\d+")
+      str_extract(.data$LapTime, "\\d{2}:\\d{2}:\\d{2}\\.\\d+")
     )), "seconds")) |>
-    filter(!is.na(LapTime_sec)) |>
-    mutate(LapStartDate = ymd_hms(LapStartDate))
+    filter(!is.na(.data$LapTime_sec)) |>
+    mutate(LapStartDate = ymd_hms(.data$LapStartDate))
 }
 
 #' Calculate the elapsed time between session start and end for track evolution.
@@ -22,7 +22,7 @@ parse_lap_times <- function(df) {
 add_elapsed_time <- function(df) {
   df |>
     mutate(Weekend_Mins_Elapsed = as.numeric(difftime(
-      LapStartDate, min(LapStartDate, na.rm = TRUE), units = "mins"
+      .data$LapStartDate, min(.data$LapStartDate, na.rm = TRUE), units = "mins"
     )))
 }
 
@@ -33,15 +33,15 @@ add_elapsed_time <- function(df) {
 #' @return A filtered data.frame of session laps.
 filter_qualifying_laps <- function(df) {
   df |>
-    group_by(Driver, Session, Stint) |>
+    group_by(.data$Driver, .data$Session, .data$Stint) |>
     mutate(StintLength = n()) |>
     ungroup() |>
     filter(
-      TrackStatus == 1,
-      IsAccurate == "True",
-      Compound == "SOFT",
-      FreshTyre == "True",
-      StintLength <= 4
+      .data$TrackStatus == 1,
+      .data$IsAccurate == "True",
+      .data$Compound == "SOFT",
+      .data$FreshTyre == "True",
+      .data$StintLength <= 4
     ) |>
-    mutate(Driver = factor(Driver), Team = factor(Team))
+    mutate(Driver = factor(.data$Driver), Team = factor(.data$Team))
 }
