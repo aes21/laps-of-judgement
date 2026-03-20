@@ -1,5 +1,14 @@
 # laps-of-judgement
-An F1 qualifying Bayesian inference performance predictor using data fetched from [FastF1](https://github.com/theOehrly/Fast-F1).
+A Bayesian hierarchical model for predicting F1 qualifying performace using data fetched from [FastF1](https://github.com/theOehrly/Fast-F1).
+
+## How it works
+Uses free practice session lap times to generate a **probabilistic forecast of qualifying times** before qualifying.
+
+### Key points
+- Representative lap times are filtered for green flag running, stints on the softest compound, fresh tyres and under 4 laps of total stint length.
+- The model accounts for track evolution across the elapsed session time term.
+- Random intercepts are nested by constructor and driver, allowing the model to share statistical strength across the field, while still estimating individual drive pace offsets.
+- The posterior predictive distribution over each driver's lap time is used to generate the quailfying gap forecasts.
 
 ## Getting started
 
