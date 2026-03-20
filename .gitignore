@@ -11,6 +11,7 @@ renv/library/
 renv/staging/
 
 # Model outputs
+data/
 outputs/
 plots/*
 !plots/predicted_grid_Spanish_Grand_Prix.png
