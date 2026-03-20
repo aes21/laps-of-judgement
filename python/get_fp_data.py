@@ -28,7 +28,7 @@ def get_fp_data(year: int, output_dir: str = "data/processed") -> None:
         for fp in practice_sessions:
             try:
                 session = fastf1.get_session(year, event_name, fp)
-                session.load(telemetry=False, weather=False, messages=False, laps=True)
+                session.load(telemetry=True, weather=False, messages=False, laps=True)
                 laps = session.laps.copy()
                 laps["RoundName"] = event_name
                 laps["Session"] = fp

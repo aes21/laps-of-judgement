@@ -39,7 +39,6 @@ filter_qualifying_laps <- function(df) {
     filter(
       TrackStatus == 1,
       IsAccurate == "True",
-      Deleted == "False",
       Compound == "SOFT",
       FreshTyre == "True",
       StintLength <= 4
