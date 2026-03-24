@@ -29,9 +29,10 @@ add_elapsed_time <- function(df) {
 #' Filters for qualifying run identification from practice runs.
 #'
 #' @param df A data.frame of session laps.
+#' @param compound Qualifying tyre compound (defaults to 'SOFT').
 #'
 #' @return A filtered data.frame of session laps.
-filter_qualifying_laps <- function(df) {
+filter_qualifying_laps <- function(df, compound = "SOFT") {
   df |>
     group_by(.data$Driver, .data$Session, .data$Stint) |>
     mutate(StintLength = n()) |>
@@ -39,7 +40,7 @@ filter_qualifying_laps <- function(df) {
     filter(
       .data$TrackStatus == 1,
       .data$IsAccurate == "True",
-      .data$Compound == "SOFT",
+      .data$Compound == compound,
       .data$FreshTyre == "True",
       .data$StintLength <= 4
     ) |>
