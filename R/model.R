@@ -15,6 +15,7 @@ args <- commandArgs(trailingOnly = TRUE)
 # default of Spanish Grand Prix for best representation
 target_race <- ifelse(length(args) > 0, args[1], "Spanish Grand Prix")
 year <- ifelse(length(args) > 1, as.integer(args[2]), 2025)
+max_stint <- ifelse(length(args) > 2, as.integer(args[3]), 6)
 
 # -----------------------------------------------------------------------------
 # Load data
@@ -29,7 +30,7 @@ data <- read.csv(glue::glue("data/processed/all_fp_laps_{year}.csv")) |>
 # Qualifying simulation filter
 # -----------------------------------------------------------------------------
 
-quali_data <- filter_qualifying_laps(data)
+quali_data <- filter_qualifying_laps(data, max_stint = max_stint)
 stopifnot(mean(is.na(data$LapTime_sec)) < 0.1) # stop if too many dropped
 
 # apply 107%
