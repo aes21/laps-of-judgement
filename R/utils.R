@@ -30,9 +30,10 @@ add_elapsed_time <- function(df) {
 #'
 #' @param df A data.frame of session laps.
 #' @param compound Qualifying tyre compound (defaults to 'SOFT').
+#' @param max_stint Maximum stint length (defaults to '6').
 #'
 #' @return A filtered data.frame of session laps.
-filter_qualifying_laps <- function(df, compound = "SOFT") {
+filter_qualifying_laps <- function(df, compound = "SOFT", max_stint = 6) {
   df |>
     group_by(.data$Driver, .data$Session, .data$Stint) |>
     mutate(StintLength = n()) |>
@@ -42,7 +43,7 @@ filter_qualifying_laps <- function(df, compound = "SOFT") {
       .data$IsAccurate == "True",
       .data$Compound == compound,
       .data$FreshTyre == "True",
-      .data$StintLength <= 4
+      .data$StintLength <= max_stint
     ) |>
     mutate(Driver = factor(.data$Driver), Team = factor(.data$Team))
 }
