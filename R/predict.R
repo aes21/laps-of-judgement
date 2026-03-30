@@ -9,6 +9,7 @@ library(ggplot2)
 args <- commandArgs(trailingOnly = TRUE)
 # default of Spanish Grand Prix for best representation
 target_race <- ifelse(length(args) > 0, args[1], "Spanish Grand Prix")
+year <- ifelse(length(args) > 1, as.integer(args[2]), 2025)
 
 event_name <- gsub(" ", "_", target_race)
 
@@ -86,7 +87,10 @@ ggplot(predicted_grid,
   ) +
   scale_fill_identity() +
   scale_colour_identity() +
-  labs(title = "Predicted Qualifying Gaps") +
+  labs(
+    title = paste(year, target_race),
+    subtitle = "Predicted Qualifying Gaps"
+  ) +
   ylab("Driver") +
   theme_minimal()
 
