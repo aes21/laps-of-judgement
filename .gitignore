@@ -5,6 +5,7 @@ fastf1_cache/
 # R history data
 *.RData
 *.Rhistory
+.Rproj.user
 
 # R renv library
 renv/library/
