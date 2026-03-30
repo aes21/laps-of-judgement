@@ -7,7 +7,7 @@ Uses free practice session lap times to generate a **probabilistic forecast of q
 ### Key points
 - Representative lap times are filtered for green flag running, stints on the softest compound, fresh tyres and under 4 laps of total stint length.
 - The model accounts for track evolution across the elapsed session time term.
-- Random intercepts are nested by constructor and driver, allowing the model to share statistical strength across the field, while still estimating individual drive pace offsets.
+- Random intercepts are nested by constructor and driver, allowing the model to share statistical strength across the field, while still estimating individual driver pace offsets.
 - The posterior predictive distribution over each driver's lap time is used to generate the quailfying gap forecasts.
 
 ## Getting started
