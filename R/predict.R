@@ -50,6 +50,18 @@ predicted_grid <- data.frame(
   arrange(Predicted_Time) |>
   mutate(Predicted_Grid_Position = row_number())
 
+# apply confidence checks
+low_confidence <- as.character(
+  model_data_q |>
+    group_by(Driver) |>
+    filter(all(confidence == "*")) |>
+    distinct(Driver) |>
+    pull(Driver)
+)
+predicted_grid$Confidence <- ""
+predicted_grid <- predicted_grid |>
+  mutate(Confidence = ifelse(Driver %in% low_confidence, "*", Confidence))
+
 # plot
 pdf(NULL)
 plot_path <- paste0("plots/predicted_grid_", year, "_", event_name, ".png")
@@ -81,6 +93,17 @@ ggplot(predicted_grid,
       x = ifelse(Gap > 0.35, Gap - 0.01, Gap + 0.01),
       hjust = ifelse(Gap > 0.35, 1, 0),
       colour = ifelse(Gap > 0.35, "#FFFFFF", "#0D0D1A")
+    ),
+    family = "mono",
+    size = 3.1,
+    fontface = "bold"
+  ) +
+  geom_text(
+    aes(
+      label = Confidence,
+      x = Gap + 0.1,
+      hjust = ifelse(Gap > 0.35, 1, 0),
+      colour = "black"
     ),
     family = "mono",
     size = 3.1,

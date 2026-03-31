@@ -43,7 +43,17 @@ filter_qualifying_laps <- function(df, compound = "SOFT", max_stint = 6) {
       .data$IsAccurate == "True",
       .data$Compound == compound,
       .data$FreshTyre == "True",
-      .data$StintLength <= max_stint
     ) |>
-    mutate(Driver = factor(.data$Driver), Team = factor(.data$Team))
+    mutate(
+      confidence = if_else(.data$StintLength <= max_stint, "", "*"),
+      Driver = factor(.data$Driver),
+      Team = factor(.data$Team)
+    ) |>
+    group_by(.data$Driver) |>
+    filter(
+      .data$StintLength <= max_stint |
+        (!any(.data$StintLength <= max_stint) & 
+           .data$StintLength == min(.data$StintLength))
+    ) |>
+    ungroup()
 }
