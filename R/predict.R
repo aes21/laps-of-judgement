@@ -10,6 +10,7 @@ args <- commandArgs(trailingOnly = TRUE)
 # default of Spanish Grand Prix for best representation
 target_race <- ifelse(length(args) > 0, args[1], "Spanish Grand Prix")
 year <- ifelse(length(args) > 1, as.integer(args[2]), 2025)
+update_latest <- length(args) > 2 && args[3] == "."
 
 event_name <- gsub(" ", "_", target_race)
 
@@ -95,6 +96,10 @@ ggplot(predicted_grid,
   theme_minimal()
 
 ggsave(plot_path)
+
+if (update_latest) {
+  ggsave("latest_prediction.png")
+}
 
 # save
 out_path <- paste0(

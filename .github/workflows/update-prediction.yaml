@@ -1,0 +1,53 @@
+name: Update Qualifying Prediction
+
+on:
+  schedule:
+    - cron: '0 6 7 3 *'    # Australia
+    - cron: '0 8 14 3 *'   # China
+    - cron: '0 7 28 3 *'   # Japan
+    - cron: '0 21 2 5 *'   # Miami
+    - cron: '0 21 23 5 *'  # Imola
+    - cron: '0 15 6 6 *'   # Monaco
+    - cron: '0 15 13 6 *'  # Spain
+    - cron: '0 15 27 6 *'  # Canada
+    - cron: '0 16 4 7 *'   # Britain
+    - cron: '0 15 18 7 *'  # Belgium
+    - cron: '0 15 25 7 *'  # Hungary
+    - cron: '0 15 22 8 *'  # Netherlands
+    - cron: '0 15 5 9 *'   # Italy
+    - cron: '0 15 12 9 *'  # Azerbaijan
+    - cron: '0 13 25 9 *'  # Singapore
+    - cron: '0 14 10 10 *' # USA
+    - cron: '0 22 24 10 *' # Mexico
+    - cron: '0 22 31 10 *' # Brazil
+    - cron: '0 19 7 11 *'  # Las Vegas
+    - cron: '0 19 28 11 *' # Qatar
+    - cron: '0 15 5 12 *'  # Abu Dhabi
+  workflow_dispatch:
+
+jobs:
+  update-prediction:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run prediction script
+        run: python python/laps_of_judgement.py
+
+      - name: Commit and push updated prediction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "update most recent session"
+          git push
