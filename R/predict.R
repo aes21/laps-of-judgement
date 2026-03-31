@@ -113,7 +113,11 @@ ggplot(predicted_grid,
   scale_colour_identity() +
   labs(
     title = paste(year, target_race),
-    subtitle = "Predicted Qualifying Gaps"
+    subtitle = "Predicted Qualifying Gaps",
+    caption = if (any(predicted_grid$Confidence == "*"))
+      "* low confidence prediction"
+    else
+      NULL
   ) +
   ylab("Driver") +
   theme_minimal()
