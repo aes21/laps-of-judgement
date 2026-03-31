@@ -40,7 +40,7 @@ Rscript R/model.R "Spanish Grand Prix" 2025
 
 ### Generate a prediction
 ```bash
-Rscript R/predict.R "Spanish Grand Prix"
+Rscript R/predict.R "Spanish Grand Prix" 2025
 ```
 A plot of the qualifying gap prediction is generated in: `plots/` :
 
