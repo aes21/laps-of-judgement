@@ -51,7 +51,7 @@ predicted_grid <- data.frame(
 
 # plot
 pdf(NULL)
-plot_path <- paste0("plots/predicted_grid_", event_name, ".png")
+plot_path <- paste0("plots/predicted_grid_", year, "_", event_name, ".png")
 dir.create("plots",
            showWarnings = FALSE,
            recursive = TRUE)
@@ -97,7 +97,9 @@ ggplot(predicted_grid,
 ggsave(plot_path)
 
 # save
-out_path <- paste0("outputs/predictions/predicted_grid_", event_name, ".csv")
+out_path <- paste0(
+  "outputs/predictions/predicted_grid_", year, "_", event_name, ".csv"
+)
 dir.create("outputs/predictions",
            showWarnings = FALSE,
            recursive = TRUE)
