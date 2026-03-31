@@ -15,7 +15,7 @@ renv/staging/
 data/
 outputs/
 plots/*
-!plots/predicted_grid_Spanish_Grand_Prix.png
+!plots/predicted_grid_2025_Spanish_Grand_Prix.png
 
 # Python
 __pycache__/
