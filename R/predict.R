@@ -92,7 +92,7 @@ ggplot(predicted_grid,
       label = Gap_label,
       x = ifelse(Gap > 0.35, Gap - 0.01, Gap + 0.01),
       hjust = ifelse(Gap > 0.35, 1, 0),
-      colour = ifelse(Gap > 0.35, "#FFFFFF", "#0D0D1A")
+      colour = ifelse(Gap > 0.35, "white", "black")
     ),
     family = "mono",
     size = 3.1,
@@ -101,7 +101,7 @@ ggplot(predicted_grid,
   geom_text(
     aes(
       label = Confidence,
-      x = Gap + 0.1,
+      x = ifelse(Gap > 0.35, Gap + 0.05, Gap + 0.15),
       hjust = ifelse(Gap > 0.35, 1, 0),
       colour = "black"
     ),
