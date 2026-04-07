@@ -1,10 +1,10 @@
 # laps-of-judgement
-A Bayesian hierarchical model for predicting F1 qualifying performace using data fetched from [FastF1](https://github.com/theOehrly/Fast-F1).
+A Bayesian hierarchical model for predicting F1 qualifying performace.
 
 ![Latest](latest_prediction.png)
 
 ## How it works
-Uses free practice session lap times to generate a **probabilistic forecast of qualifying times** before qualifying.
+Uses free practice session lap time data fetched from [FastF1](https://github.com/theOehrly/Fast-F1) to generate a **probabilistic forecast of qualifying times** before qualifying.
 
 ### Key points
 - Representative lap times are filtered for green flag running, stints on the softest compound, fresh tyres and under 4 laps of total stint length.
