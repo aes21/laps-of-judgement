@@ -34,7 +34,7 @@ def main():
 
     for cmd in steps:
         print(f"\n>>> {' '.join(cmd)}")
-        result = subprocess.run(cmd, check = True)
+        result = subprocess.run(cmd, check=True)
 
 if __name__ == "__main__":
     main()
