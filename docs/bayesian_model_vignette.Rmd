@@ -11,9 +11,11 @@ date: 'Compiled: `r Sys.Date()`'
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
+This vignette highlights the reasoning and methodology used to generate probabilistic qualifying predictions within `laps-of-judgement` via Bayesian hierarchical modelling. 
+
 ### Load in the data
 
-This vignette highlights the reasoning and methodology used to generate probabilistic qualifying predictions within `laps-of-judgement` via Bayesian hierarchical modelling. Practice session data for the given year and round is collected via `FastF1` using the `python/get_fp_data.py` script.
+Practice session data for the given year and round is collected via `FastF1` using the `python/get_fp_data.py`. You must run this script before attempting to generate qualifying time predictions.
 
 ```{r init}
 library(brms)
@@ -167,7 +169,7 @@ p1 <- ggplot(posterior_forecasts, aes(x = .prediction, y = reorder(Driver, -.pre
   labs(
     title = paste(year, target_race),
     subtitle = "Proabalistic Forecast Distribution",
-    x = "Predicted Lap Time (Seconds)"
+    x = "Predicted Lap Time (seconds)"
   ) +
   ylab("Driver") +
   theme_minimal()
