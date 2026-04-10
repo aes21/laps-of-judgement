@@ -62,7 +62,7 @@ The initial assumptions (priors) of the Bayesian inference model account for the
 
 Applying a Gaussian likelihood provides a highly robust and computationally efficient approximation for valid push laps, which tend to cluster tightly towards the mean. While the Gaussian model serves as an effective baseline for this statistical inference, future iterations exploring Log-Normal or Ex-Gaussian distributions could theoretically better capture the inherent right-hand skew of the stochastic data.
 
-```{r fit, echo=FALSE, include=FALSE}
+```{r fit, echo=TRUE, include=TRUE, message=FALSE, warning=FALSE, results='hide'}
 # Intercept prior centres the median lap time
 intercept_prior <- round(median(model_data_q$LapTime_sec, na.rm = TRUE))
 
