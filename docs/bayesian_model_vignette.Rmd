@@ -1,9 +1,6 @@
 ---
 title: "Bayesian statistics model methodology"
-output:
-    html_document:
-        theme: united
-        df_print: kable
+output: html_document
 date: 'Compiled: `r Sys.Date()`'
 ---
 
