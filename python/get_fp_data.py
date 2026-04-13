@@ -52,7 +52,7 @@ def get_fp_data(year: int, output_dir: str = "data/processed") -> None:
     all_fp_laps.to_csv(out_path, index=False)
     print(f"\nSaved {year} practice data to {out_path}")
 
-    if not os.path.exists(f"team_colours_{year}"):
+    if not (Path("data") / f"team_colours_{year}.csv").exists():
         get_team_colour(year=year)
 
 if __name__ == "__main__":
