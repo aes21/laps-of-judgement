@@ -70,7 +70,7 @@ dir.create("plots",
            recursive = TRUE)
 
 # colour index
-team_colours <- read.csv("data/team_colours.csv")
+team_colours <- read.csv(paste0("data/team_colours_", year, ".csv"))
 
 predicted_grid <- predicted_grid |>
   mutate(
