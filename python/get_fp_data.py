@@ -1,7 +1,6 @@
 import fastf1
 import pandas as pd
 import argparse
-import os
 from laps_of_judgement import get_team_colour
 from pathlib import Path
 
