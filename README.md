@@ -36,6 +36,8 @@ Example using 2025 season data.
 python python/fetch_practice_data.py --year 2025
 ```
 
+You only need to run this line once for a given year, the subsequently created `data` directory will contain the cached data required to complete the rest of the workflow for any given event of that season.
+
 ### Fit model for specific event
 ```bash
 Rscript R/model.R "Spanish Grand Prix" 2025
