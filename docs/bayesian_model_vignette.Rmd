@@ -57,7 +57,7 @@ model_data_q <- filter(quali_data, LapTime_sec <= fastest_lap * 1.07)
 
 ### Bayesian statistics
 
-The initial assumptions (priors) of the Bayesian inference model account for the average lap time: `normal(intercept_prior, 5)` and regularises erratic swings in lap times using the standard deviation and residual error (sigma) of lap times.
+The initial assumptions (priors) of the Bayesian inference model account for the average lap time: `normal(intercept_prior, 5)` and normalises erratic swings in lap times using the standard deviation and residual error (sigma) of lap times. An `exponential(1)` for the standard deviation of group-level effects and residual error gives a mean of ~1 second; a loose prior to protect against large teammate discrepancies in qualifying sessions, although this may get tightened in future.
 
 Applying a Gaussian likelihood provides a highly robust and computationally efficient approximation for valid push laps, which tend to cluster tightly towards the mean. While the Gaussian model serves as an effective baseline for this statistical inference, future iterations exploring Log-Normal or Ex-Gaussian distributions could theoretically better capture the inherent right-hand skew of the stochastic data.
 
@@ -96,7 +96,7 @@ The posterior distribution output provides a spectrum of probable lap times for 
 driver_teams <- model_data_q |> select(Driver, Team) |> distinct()
 
 # Colour index
-team_colours <- read.csv(here::here("data/team_colours.csv"))
+team_colours <- read.csv(here::here(paste0("data/team_colours_", year, ".csv")))
 
 # Set new prediction data
 new_quali_data <- data.frame(
