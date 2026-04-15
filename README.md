@@ -51,5 +51,5 @@ A plot of the qualifying gap prediction is generated in: `plots/` :
 
 ![Prediction](plots/predicted_grid_2025_Spanish_Grand_Prix.png)
 
-## Note
-FastF1 only holds practice data beyond the 2018 season. Currently, `SOFT` is considered the qualifying tyre to align with the 2019 rule change. 
+> [!NOTE]
+> FastF1 only holds practice data beyond the 2018 season. Currently, `SOFT` is considered the qualifying tyre to align with the 2019 rule change.
