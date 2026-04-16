@@ -37,31 +37,60 @@ stopifnot(mean(is.na(data$LapTime_sec)) < 0.1) # stop if too many dropped
 fastest_lap <- min(quali_data$LapTime_sec)
 model_data_q <- filter(quali_data, LapTime_sec <= fastest_lap * 1.07)
 
+# split by session
+session_model_data_q <- split(model_data_q, model_data_q$Session)
+session_names <- names(session_model_data_q)
+
 # -----------------------------------------------------------------------------
 # Fit Bayesian model
 # -----------------------------------------------------------------------------
 
 intercept_prior <- round(median(model_data_q$LapTime_sec, na.rm = TRUE))
 
-fit_quali <- brm(
-  LapTime_sec ~ log(Weekend_Mins_Elapsed + 1) + (1 | Team / Driver),
-  data = model_data_q,
+# define priors
+model_priors <- c(
+  prior_string(paste0("normal(", intercept_prior, ", 5)"), class = "Intercept"),
+  prior(exponential(1), class = "sd"),
+  prior(exponential(1), class = "sigma")
+)
+
+# model parameters
+brm_args <- list(
+  formula  = LapTime_sec ~ log(Weekend_Mins_Elapsed + 1) + (1 | Team / Driver),
   family = gaussian(),
-  prior = c(
-    prior_string(paste0("normal(", intercept_prior, ", 5)"),
-                 class = "Intercept"),
-    prior(exponential(1), class = "sd"),
-    prior(exponential(1), class = "sigma")
-  ),
+  prior = model_priors,
   chains = 4,
   iter = 4000,
   warmup = 1000,
-  cores = detectCores(),
-  threads = threading(max(1, floor(detectCores(
-  ) / 4))),
+  cores = parallel::detectCores(),
+  threads = threading(max(1, floor(detectCores() / 4))),
   backend = "cmdstanr",
   stan_model_args = list(stanc_options = list("O1"))
 )
+
+# fit for FP1
+message("Fitting session: ", session_names[1])
+session_fits <- list()
+session_fits[[session_names[1]]] <- do.call(
+  brm,
+  c(list(data = session_model_data_q[[session_names[1]]]), brm_args)
+)
+
+# update following FP2, then FP3
+for (i in seq_along(session_names)[-1]) {
+  s <- session_names[i]
+  prev <- session_names[i - 1]
+  message("Updating model with session: ", s)
+  
+  session_fits[[s]] <- update(
+    session_fits[[prev]],
+    newdata   = session_model_data_q[[s]],
+    recompile = FALSE
+  )
+}
+
+# save the final fit to recieve the fully updated model
+fit_quali <- session_fits[["FP3"]]
 
 # save model
 event_name <- gsub(" ", "_", target_race)
