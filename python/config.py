@@ -1,0 +1,9 @@
+from pathlib import Path
+import fastf1
+
+# cache directory
+CACHE_DIR = Path("data/raw/fastf1_cache")
+
+def init():
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    fastf1.Cache.enable_cache(str(CACHE_DIR))

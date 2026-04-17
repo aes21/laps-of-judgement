@@ -1,8 +1,11 @@
 import subprocess
 import fastf1
 import pandas as pd
+import config
 from fastf1 import plotting
 from pathlib import Path
+
+config.init()
 
 def get_completed_events(year: int = None) -> pd.DataFrame:
     """
@@ -11,10 +14,6 @@ def get_completed_events(year: int = None) -> pd.DataFrame:
     Args:
         year (int): Season year to call. If none, defaults to most recent season.
     """
-
-    # set fastf1 cache
-    Path("data/raw/fastf1_cache").mkdir(parents=True, exist_ok=True)
-    fastf1.Cache.enable_cache("data/raw/fastf1_cache")
 
     # get current time
     now = pd.Timestamp.now(tz="UTC")
@@ -33,9 +32,6 @@ def get_team_colour(year: int):
     Args:
         year (int): Season year to call.
     """
-    # set fastf1 cache
-    Path("data/raw/fastf1_cache").mkdir(parents=True, exist_ok=True)
-    fastf1.Cache.enable_cache("data/raw/fastf1_cache")
 
     # retrieve session data
     session = fastf1.get_session(year, 1, "R")

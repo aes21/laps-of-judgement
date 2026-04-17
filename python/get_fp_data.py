@@ -1,8 +1,11 @@
 import fastf1
 import pandas as pd
 import argparse
+import config
 from laps_of_judgement import get_completed_events, get_team_colour
 from pathlib import Path
+
+config.init()
 
 def get_fp_data(year: int, output_dir: str = "data/processed") -> None:
     """
@@ -12,11 +15,7 @@ def get_fp_data(year: int, output_dir: str = "data/processed") -> None:
         year (int): Session year.
         output_dir (str): Output directory.
     """
-
-    # set fastf1 cache
-    Path("data/raw/fastf1_cache").mkdir(parents=True, exist_ok=True)
-    fastf1.Cache.enable_cache("data/raw/fastf1_cache")
-
+    
     # retrieve events data
     events = get_completed_events(year=year)
 
