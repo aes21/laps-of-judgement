@@ -1,27 +1,29 @@
 import subprocess
 import fastf1
 import pandas as pd
+import config
 from fastf1 import plotting
 from pathlib import Path
 
-def get_recent_event() -> tuple[int, str]:
+config.init()
+
+def get_completed_events(year: int = None) -> pd.DataFrame:
     """
     Retrieve the most recent session.
-    """
 
-    # set fastf1 cache
-    Path("data/raw/fastf1_cache").mkdir(parents=True, exist_ok=True)
-    fastf1.Cache.enable_cache("data/raw/fastf1_cache")
+    Args:
+        year (int): Season year to call. If none, defaults to most recent season.
+    """
 
     # get current time
     now = pd.Timestamp.now(tz="UTC")
+    year = year or now.year
 
     # retrieve events data
-    events = fastf1.get_event_schedule(year=now.year)
-    completed_events = events[events["Session3Date"] < now] # last session before race
-    
-    last_event = completed_events.iloc[-1]
-    return now.year, last_event["EventName"]
+    events = fastf1.get_event_schedule(year=year)
+    completed_events = events[events["Session3Date"] < now] # last session before qualifying
+
+    return completed_events
 
 def get_team_colour(year: int):
     """
@@ -30,9 +32,6 @@ def get_team_colour(year: int):
     Args:
         year (int): Season year to call.
     """
-    # set fastf1 cache
-    Path("data/raw/fastf1_cache").mkdir(parents=True, exist_ok=True)
-    fastf1.Cache.enable_cache("data/raw/fastf1_cache")
 
     # retrieve session data
     session = fastf1.get_session(year, 1, "R")
@@ -52,7 +51,8 @@ def get_team_colour(year: int):
         ).to_csv(colours_path, index=False)
 
 def main():
-    year, event_name = get_recent_event()
+    year = pd.Timestamp.now(tz="UTC").year
+    event_name = get_completed_events().iloc[-1]["EventName"]
     print(f"Predicting the:{year} {event_name}")
 
     steps = [
