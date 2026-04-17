@@ -7,6 +7,9 @@ from pathlib import Path
 def get_completed_events(year: int = None) -> pd.DataFrame:
     """
     Retrieve the most recent session.
+
+    Args:
+        year (int): Season year to call. If none, defaults to most recent season.
     """
 
     # set fastf1 cache
