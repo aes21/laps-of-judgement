@@ -1,7 +1,7 @@
 import fastf1
 import pandas as pd
 import argparse
-from laps_of_judgement import get_team_colour
+from laps_of_judgement import get_completed_events, get_team_colour
 from pathlib import Path
 
 def get_fp_data(year: int, output_dir: str = "data/processed") -> None:
@@ -18,7 +18,7 @@ def get_fp_data(year: int, output_dir: str = "data/processed") -> None:
     fastf1.Cache.enable_cache("data/raw/fastf1_cache")
 
     # retrieve events data
-    events = fastf1.get_event_schedule(year=year)
+    events = get_completed_events(year=year)
 
     # define fp sessions
     practice_sessions = ["FP1", "FP2", "FP3"]

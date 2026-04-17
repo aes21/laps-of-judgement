@@ -4,7 +4,7 @@ import pandas as pd
 from fastf1 import plotting
 from pathlib import Path
 
-def get_recent_event() -> tuple[int, str]:
+def get_completed_events(year: int = None) -> pd.DataFrame:
     """
     Retrieve the most recent session.
     """
@@ -15,13 +15,13 @@ def get_recent_event() -> tuple[int, str]:
 
     # get current time
     now = pd.Timestamp.now(tz="UTC")
+    year = year or now.year
 
     # retrieve events data
-    events = fastf1.get_event_schedule(year=now.year)
-    completed_events = events[events["Session3Date"] < now] # last session before race
-    
-    last_event = completed_events.iloc[-1]
-    return now.year, last_event["EventName"]
+    events = fastf1.get_event_schedule(year=year)
+    completed_events = events[events["Session3Date"] < now] # last session before qualifying
+
+    return completed_events
 
 def get_team_colour(year: int):
     """
@@ -52,7 +52,8 @@ def get_team_colour(year: int):
         ).to_csv(colours_path, index=False)
 
 def main():
-    year, event_name = get_recent_event()
+    year = pd.Timestamp.now(tz="UTC").year
+    event_name = get_completed_events().iloc[-1]["EventName"]
     print(f"Predicting the:{year} {event_name}")
 
     steps = [
