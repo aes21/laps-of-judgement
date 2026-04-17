@@ -4,44 +4,24 @@ Ideas and potential extensions to this project.
 
 ## Bayesian Methods
 
-### Sequential Bayesian updating
-Update the posterior after each practice session (FP1 → FP2 → FP3) rather than fitting a single model per weekend. Requires restructuring the model fitting step to accept a prior from the previous session's posterior.
+- [ ] **Sequential modelling**: Update the posterior after each practice session (FP1 → FP2 → FP3) rather than fitting a single model per weekend. Requires restructuring the model fitting step to accept a prior from the previous session's posterior. Investigate visualisation methods for team/driver trends of the practice days.
 
-### Prior sensitivity analysis
-Systematically vary the priors and quantify how predictions shift as a result.
+- [ ] **Prior analysis**: Investigate prior optimisation by building a 'testing' workflow evaluating predictions against known results.
 
 ## Time Series & Stochastic Processes
 
-### Track evolution as a latent variable
-Plan to model track rubber improvement as a latent state rather than a fixed elapsed-time term.
+- [ ] **Track evolution**: Attempt to add track evolution (as a factor of time and weather) to model grip improvements.
 
-### Gaussian Process regression for session progression
-Model lap time as a GP over elapsed session time, allowing a more flexible and principled treatment of track evolution.
+- [ ] **Session progression improvements**: Refine and optimise elapsed time factoring.
 
-### Season-long car performance tracking
-Extend the model across a full season to track how each constructor's relative pace evolves round-to-round.
+- [ ] **Tyre degradation modelling**: Fit a degradation curve (lap time vs. tyre age) as part of the model, with compound and driver as hierarchical random effects.
 
-## Causal Inference
+## Method Inference
 
-### Causal DAG for lap time
-Build a directed acyclic graph (DAG) of the factors that drive lap time — fuel load, tyre compound, track temperature, driver, car — and use it to reason about interventions explicitly.
-- Tools: `dagitty` or `bnlearn` in R.
+- [ ] **DAG**: Build a directed acyclic graph (DAG) of the factors that drive lap time — fuel load, tyre compound, track temperature, driver, car and use it to reason about interventions explicitly. Tools: `dagitty` or `bnlearn` in R.
 
-### Weather as a natural experiment
-Use sessions with mixed or wet conditions as a natural experiment to practice difference-in-differences or regression discontinuity designs.
-
-## Uncertainty Quantification & Decision Theory
-
-### Full posterior predictive visualisation
-Plot the complete posterior predictive distribution per driver rather than just the point estimate and credible interval.
-
-### Monte Carlo race strategy simulation
-Propagate uncertainty from the posterior through a simplified race strategy decision (e.g. pit window timing) using Monte Carlo draws. Directly analogous to simulation-based VaR calculation.
+- [ ] **Uncertainty Quantification & Decision Theory**: Plot the complete posterior predictive distribution per driver rather than just the point estimate and credible interval. Propagate uncertainty from the posterior through a simplified race strategy decision (e.g. pit window timing) using Monte Carlo draws. Directly analogous to simulation-based VaR calculation.
 
 ## Model Comparison & Validation
 
-### LOO-CV / WAIC model comparison
-Compare models of varying complexity using leave-one-out cross-validation or WAIC.
-
-### Tyre degradation modelling
-Fit a degradation curve (lap time vs. tyre age) as part of the model, with compound and driver as hierarchical random effects. Conceptually maps to decay and mean-reversion models.
+- [ ] **LOO-CV / WAIC model comparison**: Compare models of varying complexity using leave-one-out cross-validation or WAIC.
