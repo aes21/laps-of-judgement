@@ -33,7 +33,7 @@ Rscript -e "renv::restore()"
 Example using 2025 season data.
 
 ```bash
-python python/get_fp_data.py --year 2025
+python python/get_data.py --year 2025
 ```
 
 You only need to run this line once for a given year, the subsequently created `data` directory will contain the cached data required to complete the rest of the workflow for any given event of that season.

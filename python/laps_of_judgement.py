@@ -56,7 +56,7 @@ def main():
     print(f"Predicting the:{year} {event_name}")
 
     steps = [
-        ["python", "python/get_fp_data.py", "--year", str(year)],
+        ["python", "python/get_data.py", "--year", str(year)],
         ["Rscript", "R/model.R", event_name, str(year)],
         ["Rscript", "R/predict.R", event_name, str(year), "."]
     ]
