@@ -5,7 +5,7 @@ import config
 from fastf1 import plotting
 from pathlib import Path
 
-config.init()
+config.init_cache()
 
 def get_completed_events(year: int = None) -> pd.DataFrame:
     """
