@@ -12,6 +12,7 @@ def get_session_data(session_type: SessionType, year: int, output_dir: str = "da
     Retrieve a complete year's free practice session data from fastf1.
 
     Args:
+        session_type (SessionType): The session type data to retrieve (e.g., `SessionType.P`).
         year (int): Session year.
         output_dir (str): Output directory.
     """
