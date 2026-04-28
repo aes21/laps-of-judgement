@@ -24,12 +24,20 @@ model_data_q <- readRDS(paste0("outputs/model_data_", event_name, ".rds"))
 # get drivers
 driver_teams <- model_data_q |> select(Driver, Team) |> distinct()
 
+# check for missing drivers
+dropped_levels <- setdiff(
+  levels(new_quali_data$Driver),
+  levels(fit_quali$data$Driver)
+)
+
 # set new data
 new_quali_data <- data.frame(
   Driver = driver_teams$Driver,
   Team = driver_teams$Team,
   Weekend_Mins_Elapsed = max(model_data_q$Weekend_Mins_Elapsed, na.rm = TRUE)
-)
+) |>
+  filter(!Driver %in% dropped_levels) |>
+  mutate(Driver = droplevels(Driver))
 
 # -----------------------------------------------------------------------------
 # Make prediction
