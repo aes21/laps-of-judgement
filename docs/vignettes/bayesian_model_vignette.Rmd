@@ -67,7 +67,7 @@ intercept_prior <- round(median(model_data_q$LapTime_sec, na.rm = TRUE))
 
 # Fit the Bayesian model
 fit_quali <- brm(
-  LapTime_sec ~ log(Weekend_Mins_Elapsed + 1) + (1 | Team / Driver),
+  LapTime_sec ~ log(Weekend_Mins_Elapsed + 1) + Driver + (1 | Team),
   data = model_data_q,
   family = gaussian(),
   prior = c(
@@ -87,7 +87,9 @@ fit_quali <- brm(
 )
 ```
 
-This approach attempts to account for the track evolution over the weekend (`log(Weekend_Mins_Elapsed + 1)`) to pull lap times down as the grip improves. Partial pooling shares information across drivers within their respective constructors: `1 | Team / Driver`, allowing extreme outliers (or reduced running) do not destabilise a driver's predicted qualifying time, instead shrinking it towards the team's mean lap times. The model deploys Markov Chain Monte Carlo (MCMC) algorithms via Stan (`backend = "cmdstanr"`), running 4 parallel chains for 4000 iterations to explore thousands of valid parameter combinations.
+This approach attempts to account for the track evolution over the weekend (`log(Weekend_Mins_Elapsed + 1)`) to pull lap times down as the grip improves. Individual driver lap times were previously shrunk towards a team average to prevent extreme outliers (`1 | Team / Driver`). Alternatively, providing each driver with a free intercept provides better inter-team pace differentiation: `Driver + (1 | Team)`.
+
+The model deploys Markov Chain Monte Carlo (MCMC) algorithms via Stan (`backend = "cmdstanr"`), running 4 parallel chains for 4000 iterations to explore thousands of valid parameter combinations.
 
 The posterior distribution output provides a spectrum of probable lap times for each driver. Below, the 1st percentile (`0.01`) of each driver's simulated lap distribution is selected in an attempt mimic the optimal lap time achieveable.
 
