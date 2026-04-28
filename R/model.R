@@ -44,7 +44,7 @@ model_data_q <- filter(quali_data, LapTime_sec <= fastest_lap * 1.07)
 intercept_prior <- round(median(model_data_q$LapTime_sec, na.rm = TRUE))
 
 fit_quali <- brm(
-  LapTime_sec ~ log(Weekend_Mins_Elapsed + 1) + (1 | Team / Driver),
+  LapTime_sec ~ log(Weekend_Mins_Elapsed + 1) + Driver + (1 | Team),
   data = model_data_q,
   family = gaussian(),
   prior = c(
