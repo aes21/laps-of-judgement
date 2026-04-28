@@ -21,7 +21,7 @@ def get_session_data(session_type: SessionType, year: int, output_dir: str = "da
     events = get_completed_events(year=year)
 
     # define fp sessions
-    sessions = session_type.value
+    sessions = session_type.sessions
     all_laps = []
 
     # retrieve all available session lap data

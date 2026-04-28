@@ -13,3 +13,7 @@ class SessionType(Enum):
     P = ["FP1", "FP2", "FP3"]
     Q = ["Q"]
     R = ["R"]
+
+    @property
+    def sessions(self):
+        return self.value
