@@ -21,7 +21,7 @@ max_stint <- ifelse(length(args) > 2, as.integer(args[3]), 6)
 # Load data
 # -----------------------------------------------------------------------------
 
-data <- read.csv(glue::glue("data/processed/all_fp_laps_{year}.csv")) |>
+data <- read.csv(glue::glue("data/processed/all_p_laps_{year}.csv")) |>
   filter(RoundName == target_race) |>
   parse_lap_times() |>
   add_elapsed_time()
