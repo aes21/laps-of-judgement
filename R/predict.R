@@ -57,7 +57,7 @@ simulated_quali_laps <- posterior_predict(
 predicted_grid <- data.frame(
   Driver = new_quali_data$Driver,
   Team = new_quali_data$Team,
-  Predicted_Time = apply(simulated_quali_laps, 2, quantile, probs = 0.05)
+  Predicted_Time = apply(simulated_quali_laps, 2, quantile, probs = 0.01)
 ) |>
   arrange(Predicted_Time) |>
   mutate(Predicted_Grid_Position = row_number())
