@@ -33,7 +33,7 @@ year <- 2025
 max_stint <- 6
 
 # Load in the lap time data
-data <- read.csv(glue::glue(here::here("data/processed/all_fp_laps_{year}.csv"))) |>
+data <- read.csv(glue::glue(here::here("data/processed/all_p_laps_{year}.csv"))) |>
   filter(RoundName == target_race) |>
   parse_lap_times() |>
   add_elapsed_time()
@@ -89,7 +89,7 @@ fit_quali <- brm(
 
 This approach attempts to account for the track evolution over the weekend (`log(Weekend_Mins_Elapsed + 1)`) to pull lap times down as the grip improves. Partial pooling shares information across drivers within their respective constructors: `1 | Team / Driver`, allowing extreme outliers (or reduced running) do not destabilise a driver's predicted qualifying time, instead shrinking it towards the team's mean lap times. The model deploys Markov Chain Monte Carlo (MCMC) algorithms via Stan (`backend = "cmdstanr"`), running 4 parallel chains for 4000 iterations to explore thousands of valid parameter combinations.
 
-The posterior distribution output provides a spectrum of probable lap times for each driver, allowing quantification of the uncertainty and subsequent probabilistic forecast of a 'most likely' lap time per driver.
+The posterior distribution output provides a spectrum of probable lap times for each driver. Below, the 1st percentile (`0.01`) of each driver's simulated lap distribution is selected in an attempt mimic the optimal lap time achieveable.
 
 ```{r lap, echo=FALSE, results='hide'}
 # Get driver information
@@ -116,7 +116,7 @@ simulated_quali_laps <- posterior_predict(
 predicted_grid <- data.frame(
   Driver = new_quali_data$Driver,
   Team = new_quali_data$Team,
-  Predicted_Time = apply(simulated_quali_laps, 2, quantile, probs = 0.05)
+  Predicted_Time = apply(simulated_quali_laps, 2, quantile, probs = 0.01)
 ) |>
   arrange(Predicted_Time) |>
   mutate(Predicted_Grid_Position = row_number())
