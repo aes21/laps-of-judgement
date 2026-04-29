@@ -24,5 +24,6 @@ __pycache__/
 .env
 
 # Docs
-docs/vignettes/**
-!docs/vignettes/**/*.md
+docs/vignettes/*
+!docs/vignettes/*.md
+!docs/vignettes/*/
