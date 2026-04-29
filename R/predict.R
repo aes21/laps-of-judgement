@@ -175,7 +175,7 @@ if (file.exists(glue::glue("data/processed/all_q_laps_{year}.csv"))) {
       tibble(
         Pred_Mean = mean(x),
         Pred_Median = median(x),
-        Predicted_Time = quantile(x, 0.01),
+        Predicted_Time = quantile(x, 0.05),
         Lower_95 = quantile(x, 0.025),
         Upper_95 = quantile(x, 0.975)
       )
@@ -200,11 +200,11 @@ if (file.exists(glue::glue("data/processed/all_q_laps_{year}.csv"))) {
         colour = Colour
       ),
       linewidth = 3) +
-      geom_point(aes(y = Pred_Mean, fill = "Predicted (Mean)"),
+      geom_point(aes(y = Pred_Mean, fill = "Mean"),
                  shape = 21,
                  size = 3) +
       geom_point(
-        aes(y = Predicted_Time, fill = "Predicted (1st Pctl)"),
+        aes(y = Predicted_Time, fill = "Predicted"),
         shape = 22,
         size = 3
       ) +
@@ -220,8 +220,8 @@ if (file.exists(glue::glue("data/processed/all_q_laps_{year}.csv"))) {
       scale_fill_manual(
         name = NULL,
         values = c(
-          "Predicted (Mean)" = "white",
-          "Predicted (1st Pctl)" = "grey50",
+          "Mean" = "white",
+          "Predicted" = "grey50",
           "Actual" = "black"
         )
       ) +
