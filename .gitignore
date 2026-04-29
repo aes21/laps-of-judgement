@@ -22,3 +22,7 @@ plots/*
 __pycache__/
 *.pyc
 .env
+
+# Docs
+docs/vignettes/**
+!docs/vignettes/**/*.md
