@@ -4,7 +4,7 @@ Ideas and potential extensions to this project.
 
 ## Bayesian Methods
 
-- [ x ] **Sequential modelling**: Update the posterior after each practice session (FP1 → FP2 → FP3) rather than fitting a single model per weekend. Requires restructuring the model fitting step to accept a prior from the previous session's posterior. Investigate visualisation methods for team/driver trends of the practice days.
+- [x] **Sequential modelling**: Update the posterior after each practice session (FP1 → FP2 → FP3) rather than fitting a single model per weekend. Requires restructuring the model fitting step to accept a prior from the previous session's posterior. Investigate visualisation methods for team/driver trends of the practice days.
 
 - [ ] **Prior analysis**: Investigate prior optimisation by building a 'testing' workflow evaluating predictions against known results.
 
