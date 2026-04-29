@@ -25,7 +25,7 @@ def get_completed_events(year: int = None) -> pd.DataFrame:
 
     return completed_events
 
-def get_team_colour(year: int):
+def get_team_colour(year: int) -> None:
     """
     Retrieve given year constructor team colours.
 
