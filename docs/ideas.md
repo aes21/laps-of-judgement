@@ -4,7 +4,7 @@ Ideas and potential extensions to this project.
 
 ## Bayesian Methods
 
-- [ ] **Sequential modelling**: Update the posterior after each practice session (FP1 → FP2 → FP3) rather than fitting a single model per weekend. Requires restructuring the model fitting step to accept a prior from the previous session's posterior. Investigate visualisation methods for team/driver trends of the practice days.
+- [ x ] **Sequential modelling**: Update the posterior after each practice session (FP1 → FP2 → FP3) rather than fitting a single model per weekend. Requires restructuring the model fitting step to accept a prior from the previous session's posterior. Investigate visualisation methods for team/driver trends of the practice days.
 
 - [ ] **Prior analysis**: Investigate prior optimisation by building a 'testing' workflow evaluating predictions against known results.
 
@@ -18,7 +18,7 @@ Ideas and potential extensions to this project.
 
 ## Method Inference
 
-- [ ] **DAG**: Build a directed acyclic graph (DAG) of the factors that drive lap time — fuel load, tyre compound, track temperature, driver, car and use it to reason about interventions explicitly. Tools: `dagitty` or `bnlearn` in R.
+- [ ] **DAG**: Build a directed acyclic graph (DAG) of the factors that drive lap time - fuel load, tyre compound, track temperature, driver, car and use it to reason about interventions explicitly. Tools: `dagitty` or `bnlearn` in R.
 
 - [ ] **Uncertainty Quantification & Decision Theory**: Plot the complete posterior predictive distribution per driver rather than just the point estimate and credible interval. Propagate uncertainty from the posterior through a simplified race strategy decision (e.g. pit window timing) using Monte Carlo draws. Directly analogous to simulation-based VaR calculation.
 
