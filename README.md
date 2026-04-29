@@ -38,6 +38,9 @@ python python/get_data.py --year 2025
 
 You only need to run this line once for a given year, the subsequently created `data` directory will contain the cached data required to complete the rest of the workflow for any given event of that season.
 
+> [!WARNING]
+> FastF1 only holds practice data beyond the 2018 season. Currently, `SOFT` is considered the qualifying tyre to align with the 2019 rule change.
+
 ### Fit model for specific event
 ```bash
 Rscript R/model.R "Spanish Grand Prix" 2025
@@ -66,4 +69,4 @@ A plot of the simulated qualifying gaps and prediction evaluations are generated
 </table>
 
 > [!NOTE]
-> FastF1 only holds practice data beyond the 2018 season. Currently, `SOFT` is considered the qualifying tyre to align with the 2019 rule change.
+> Drivers that participated in a practice session but not in qualifying (e.g., a reserve driver) are included in simulated predictions, but dropped in any evaluation of the models.
