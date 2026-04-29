@@ -16,6 +16,7 @@ data/
 outputs/
 plots/*
 !plots/predicted_grid_2025_Spanish_Grand_Prix.png
+!plots/evaluated_grid_2025_Spanish_Grand_Prix.png
 
 # Python
 __pycache__/

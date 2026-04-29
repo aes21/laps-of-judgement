@@ -47,9 +47,23 @@ Rscript R/model.R "Spanish Grand Prix" 2025
 ```bash
 Rscript R/predict.R "Spanish Grand Prix" 2025
 ```
-A plot of the qualifying gap prediction is generated in: `plots/` :
 
-![Prediction](plots/predicted_grid_2025_Spanish_Grand_Prix.png)
+### Evaluate the prediction
+For predicted sessions that have already been completed, the simulation can be evaluated against the known finishing results. You must retrieve the relevant season qualifying lap data before evalutating the model's predictions.
+
+```bash
+python python/get_data.py --session_type Q --year 2025
+Rscript R/model.R "Spanish Grand Prix" 2025
+Rscript R/predict.R "Spanish Grand Prix" 2025
+```
+A plot of the simulated qualifying gaps and prediction evaluations are generated in the `plots/` directory:
+
+<table>
+  <tr>
+    <td><img src="plots/predicted_grid_2025_Spanish_Grand_Prix.png" width="400"/></td>
+    <td><img src="plots/evaluated_grid_2025_Spanish_Grand_Prix.png" width="400"/></td>
+  </tr>
+</table>
 
 > [!NOTE]
 > FastF1 only holds practice data beyond the 2018 season. Currently, `SOFT` is considered the qualifying tyre to align with the 2019 rule change.
