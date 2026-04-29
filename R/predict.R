@@ -2,6 +2,9 @@ library(brms)
 library(dplyr)
 library(ggplot2)
 
+# utility functions
+source("R/utils.R")
+
 # -----------------------------------------------------------------------------
 # Args
 # -----------------------------------------------------------------------------
@@ -36,10 +39,8 @@ new_quali_data <- data.frame(
 # -----------------------------------------------------------------------------
 
 # check for missing drivers
-dropped_levels <- setdiff(
-  levels(new_quali_data$Driver),
-  levels(fit_quali$data$Driver)
-)
+dropped_levels <- setdiff(levels(new_quali_data$Driver),
+                          levels(fit_quali$data$Driver))
 
 # remove missing drivers
 new_quali_data <- new_quali_data |>
@@ -63,13 +64,11 @@ predicted_grid <- data.frame(
   mutate(Predicted_Grid_Position = row_number())
 
 # apply confidence checks
-low_confidence <- as.character(
-  model_data_q |>
-    group_by(Driver) |>
-    filter(all(confidence == "*")) |>
-    distinct(Driver) |>
-    pull(Driver)
-)
+low_confidence <- as.character(model_data_q |>
+                                 group_by(Driver) |>
+                                 filter(all(confidence == "*")) |>
+                                 distinct(Driver) |>
+                                 pull(Driver))
 predicted_grid$Confidence <- ""
 predicted_grid <- predicted_grid |>
   mutate(Confidence = ifelse(Driver %in% low_confidence, "*", Confidence))
@@ -77,9 +76,7 @@ predicted_grid <- predicted_grid |>
 # plot
 pdf(NULL)
 plot_path <- paste0("plots/predicted_grid_", year, "_", event_name, ".png")
-dir.create("plots",
-           showWarnings = FALSE,
-           recursive = TRUE)
+dir.create("plots", showWarnings = FALSE, recursive = TRUE)
 
 # colour index
 team_colours <- read.csv(paste0("data/team_colours_", year, ".csv"))
@@ -96,8 +93,8 @@ predicted_grid <- predicted_grid |>
   ) |>
   left_join(team_colours |> select(Team, Colour), by = "Team")
 
-ggplot(predicted_grid,
-       aes(x = Gap, y = reorder(Driver, -Predicted_Grid_Position))) +
+p1 <- ggplot(predicted_grid,
+             aes(x = Gap, y = reorder(Driver, -Predicted_Grid_Position))) +
   geom_col(aes(fill = Colour), width = 0.65, colour = NA) +
   geom_text(
     aes(
@@ -134,16 +131,18 @@ ggplot(predicted_grid,
   ylab("Driver") +
   theme_minimal()
 
-ggsave(plot_path)
+ggsave(plot_path, plot = p1)
 
 if (update_latest) {
   ggsave("latest_prediction.png")
 }
 
 # save
-out_path <- paste0(
-  "outputs/predictions/predicted_grid_", year, "_", event_name, ".csv"
-)
+out_path <- paste0("outputs/predictions/predicted_grid_",
+                   year,
+                   "_",
+                   event_name,
+                   ".csv")
 dir.create("outputs/predictions",
            showWarnings = FALSE,
            recursive = TRUE)
@@ -151,3 +150,117 @@ write.csv(predicted_grid, out_path, row.names = FALSE)
 
 print(predicted_grid)
 cat("\nPredictions saved to:", out_path, "\n")
+
+# -----------------------------------------------------------------------------
+# Evaluate prediction
+# -----------------------------------------------------------------------------
+
+# only proceed if qualifying results have been retrieved
+if (file.exists(glue::glue("data/processed/all_q_laps_{year}.csv"))) {
+  q_data <- read.csv(glue::glue("data/processed/all_q_laps_{year}.csv")) |>
+    filter(RoundName == target_race) |>
+    parse_lap_times() |>
+    add_elapsed_time() |>
+    select(Driver, Team, LapTime_sec) |>
+    group_by(Driver) |>
+    slice_min(LapTime_sec, n = 1) |>
+    ungroup() |>
+    arrange(LapTime_sec) |>
+    left_join(team_colours |> select(Team, Colour), by = "Team")
+
+  if (nrow(q_data) != 0) {
+    # calculate summary stats for prediction accuracy
+    colnames(simulated_quali_laps) <- new_quali_data$Driver
+    pred_summaries <- apply(simulated_quali_laps, 2, function(x) {
+      tibble(
+        Pred_Mean = mean(x),
+        Pred_Median = median(x),
+        Predicted_Time = quantile(x, 0.05),
+        Lower_95 = quantile(x, 0.025),
+        Upper_95 = quantile(x, 0.975)
+      )
+    }) |>
+      bind_rows(.id = "Driver")
+
+    # merge and compute PIT scores
+    evaluation_data <- q_data |>
+      inner_join(pred_summaries, by = "Driver") |>
+      rowwise() |>
+      mutate(PIT_Value = mean(simulated_quali_laps[, Driver] <= LapTime_sec)) |>
+      ungroup()
+
+    # plot
+    eval_path <- paste0("plots/evaluated_grid_", year, "_", event_name, ".png")
+    dir.create("plots", showWarnings = FALSE, recursive = TRUE)
+
+    p2 <- ggplot(evaluation_data, aes(x = reorder(Driver, -LapTime_sec))) +
+      geom_linerange(aes(
+        ymin = Lower_95,
+        ymax = Upper_95,
+        colour = Colour
+      ),
+      linewidth = 3) +
+      geom_point(aes(y = Pred_Mean, fill = "Mean"),
+                 shape = 21,
+                 size = 3) +
+      geom_point(
+        aes(y = Predicted_Time, fill = "Predicted"),
+        shape = 22,
+        size = 3
+      ) +
+      geom_point(aes(y = LapTime_sec, fill = "Actual"),
+                 shape = 23,
+                 size = 3) +
+      geom_text(
+        aes(y = Inf, label = sprintf("PIT: %.2f", PIT_Value)),
+        hjust = 0.1,
+        size = 3,
+        colour = "black",
+      ) +
+      scale_fill_manual(
+        name = NULL,
+        values = c(
+          "Mean" = "white",
+          "Predicted" = "grey50",
+          "Actual" = "black"
+        )
+      ) +
+      scale_colour_identity() +
+      coord_flip(clip = "off") +
+      labs(
+        title = paste(year, target_race),
+        subtitle = "Predicted vs. Actual Qualifying Times",
+        caption = "95% Credible Interval Error Bars",
+        x = "Driver",
+        y = "Lap Time (seconds)"
+      ) +
+      theme_minimal() +
+      theme(
+        legend.position = "bottom",
+        plot.margin = margin(
+          t = 5,
+          r = 40,
+          b = 5,
+          l = 5,
+          unit = "pt"
+        )
+      )
+
+    ggsave(eval_path, plot = p2)
+
+    # save
+    eval_out_path <- paste0("outputs/predictions/evaluated_grid_",
+                            year,
+                            "_",
+                            event_name,
+                            ".csv")
+    dir.create("outputs/predictions",
+               showWarnings = FALSE,
+               recursive = TRUE)
+    write.csv(evaluation_data, eval_out_path, row.names = FALSE)
+
+    cat("\nPrediction evaluation saved to:", eval_out_path, "\n")
+  } else {
+    cat("Collect qualifying data from this season to evaluate the simulations.")
+  }
+}
