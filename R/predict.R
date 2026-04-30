@@ -1,6 +1,7 @@
 library(brms)
 library(dplyr)
 library(ggplot2)
+library(tidyr)
 
 # utility functions
 source("R/utils.R")
@@ -261,8 +262,76 @@ if (file.exists(glue::glue("data/processed/all_q_laps_{year}.csv"))) {
 
     cat("\nPrediction evaluation saved to:", eval_out_path, "\n")
   } else {
-    cat("\nQualifying results for", target_race, "could not be found\n",)
+    cat("\nQualifying results for", target_race, "could not be found\n")
   }
 } else {
   cat("Collect qualifying data from this season to evaluate the simulations.")
 }
+
+# -----------------------------------------------------------------------------
+# Probability distribution
+# -----------------------------------------------------------------------------
+
+# rank each draw
+position_draws <- t(apply(simulated_quali_laps, 1, function(draw) {
+  rank(draw, ties.method = "random")
+}))
+colnames(position_draws) <- new_quali_data$Driver
+
+# collapse and provide summary data
+position_probs <- as.data.frame(position_draws) |>
+  pivot_longer(everything(), names_to = "Driver", values_to = "Position") |>
+  count(Driver, Position) |>
+  group_by(Driver) |>
+  mutate(Probability = n / sum(n)) |>
+  ungroup() |>
+  complete(Driver,
+           Position = seq_len(ncol(position_draws)),
+           fill = list(Probability = 0))
+
+# set most likely order
+driver_order <- position_probs |>
+  group_by(Driver) |>
+  summarise(Expected_Pos = sum(Position * Probability)) |>
+  arrange(desc(Expected_Pos)) |>
+  pull(Driver)
+
+# plot
+prob_path <- paste0("plots/probability_grid_", year, "_", event_name, ".png")
+dir.create("plots", showWarnings = FALSE, recursive = TRUE)
+
+p3 <- ggplot(
+  position_probs |>
+    mutate(Driver = factor(Driver, levels = driver_order)),
+  aes(x = Driver, y = Position, fill = Probability)
+) +
+  geom_tile(colour = "grey50", linewidth = 0.3, width = 1, height = 1) +
+  geom_text(
+    data = position_probs |>
+      group_by(Position) |>
+      slice_max(Probability, n = 1) |>
+      filter(Probability > 0.05),
+    aes(label = scales::percent(Probability, accuracy = 1)),
+    colour = "grey20",
+    fontface = "bold",
+    size = 3,
+    hjust = 0.4
+  ) +
+  scale_fill_gradient(low = "#F7F7F7", high = "#2166AC", name = NULL) +
+  guides(fill = guide_colorbar(
+    barwidth  = 10,
+    barheight = 0.7,
+  )) +
+  scale_y_continuous(breaks = 1:n_distinct(position_probs$Driver),
+                     expand = c(0, 0)) +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  labs(
+    title = paste(year, target_race),
+    subtitle = "Qualifying Position Probability",
+    caption = paste0("Labels indicate most likely driver per position over ",
+                     nrow(position_draws), " Draws")
+  ) +
+  coord_flip()
+
+ggsave(prob_path, plot = p3)
