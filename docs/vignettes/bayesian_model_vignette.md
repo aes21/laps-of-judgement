@@ -1,6 +1,6 @@
 Bayesian statistics model methodology
 ================
-Compiled: 2026-04-29
+Compiled: 2026-04-30
 
 This vignette highlights the reasoning and methodology used to generate
 probabilistic qualifying predictions within `laps-of-judgement` via
@@ -115,8 +115,8 @@ The model deploys Markov Chain Monte Carlo (MCMC) algorithms via Stan
 to explore thousands of valid parameter combinations.
 
 The posterior distribution output provides a spectrum of probable lap
-times for each driver. Below, the 1st percentile (`0.01`) of each
+times for each driver. Below, the 1st percentile (`0.05`) of each
 driver’s simulated lap distribution is selected in an attempt mimic the
-optimal lap time achieveable.
+optimal lap time achievable.
 
 <img src="bayesian_model_vignette_files/figure-gfm/plots-1.png" alt="" width="100%" style="display: block; margin: auto;" />
