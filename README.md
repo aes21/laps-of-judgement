@@ -6,7 +6,7 @@ A Bayesian hierarchical model for predicting F1 qualifying performace.
 ## Methodology
 For a deeper discussion of the methods used, see:
 - [Bayesian statistics modelling vignette](docs/vignettes/bayesian_model_vignette.md).
-- [Model evlautation vignette](docs/vignettes/evaluating_model_vignette.md).
+- [Model evaluation vignette](docs/vignettes/evaluating_model_vignette.md).
 
 ## How it works
 Uses free practice session lap time data fetched from [FastF1](https://github.com/theOehrly/Fast-F1) to generate a **probabilistic forecast of qualifying times** before qualifying.
