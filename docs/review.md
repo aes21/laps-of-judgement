@@ -110,7 +110,7 @@ Drivers with insufficient practice data to form a reliable posterior are flagged
 
 ![Predicted](../plots/predicted_grid_2025_Spanish_Grand_Prix.png)
 
-As previously discussed, the 5th percentile is selected to extract a predicted qualifying time. The distribution of lap times across the simulated draws helps identify the probability of a driver landing a specific grid spot. As observed below, despite Norris (NOR) taking the pole in the point simulation, Piastri (PIA) is identified as having the quickest lap time in 26% of the simulated draws.
+As previously discussed, the 5th percentile is selected to extract a predicted qualifying time. The distribution of lap times across the simulated draws helps identify the probability of a driver landing a specific grid spot. As observed below, despite Norris (NOR) taking the pole in the point simulation, Piastri (PIA) is identified as having the quickest lap time in 25% of the simulated draws.
 
 ![Probability](../plots/probability_grid_2025_Spanish_Grand_Prix.png)
 
