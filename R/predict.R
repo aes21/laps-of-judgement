@@ -261,6 +261,8 @@ if (file.exists(glue::glue("data/processed/all_q_laps_{year}.csv"))) {
 
     cat("\nPrediction evaluation saved to:", eval_out_path, "\n")
   } else {
-    cat("Collect qualifying data from this season to evaluate the simulations.")
+    cat("\nQualifying results for", target_race, "could not be found\n",)
   }
+} else {
+  cat("Collect qualifying data from this season to evaluate the simulations.")
 }
