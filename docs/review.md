@@ -99,16 +99,20 @@ Convergence is assessed implicitly via the `brms` framework. The posterior distr
 
 ### Prediction
 
+```bash
+Rscript R/model.R "Spanish Grand Prix" 2025
+Rscript R/predict.R "Spanish Grand Prix" 2025
+```
+
 Qualifying time forecasts are generated from the posterior predictive distribution. For each driver, the 5th percentile of their simulated lap time distribution is extracted as the point forecast. This attempts to approximate the optimal lap achievable by that driver under qualifying-representative conditions. The gap to the simulated pole time is then computed for each draw, yielding a distribution of predicted qualifying gaps per driver from which interval estimates can be reported.
 
 Drivers with insufficient practice data to form a reliable posterior are flagged with an asterisk in the output, indicating low confidence in the prediction. The resulting forecast is saved to `plots/` as a visualisation of the simulated qualifying gap distributions.
 
 ![Predicted](../plots/predicted_grid_2025_Spanish_Grand_Prix.png)
 
-```bash
-Rscript R/model.R "Spanish Grand Prix" 2025
-Rscript R/predict.R "Spanish Grand Prix" 2025
-```
+As previously discussed, the 5th percentile is selected to extract a predicted qualifying time. The distribution of lap times across the simulated draws helps identify the probability of a driver landing a specific grid spot. As observed below, despite Norris (NOR) taking the pole in the point simulation, Piastri (PIA) is identified as having the quickest lap time in 26% of the simulated draws.
+
+![Probability](../plots/probability_grid_2025_Spanish_Grand_Prix.png)
 
 ### Evaluation
 
@@ -116,7 +120,7 @@ For sessions that have already been completed, the model's predictions can be ev
 
 ![Evaluation](../plots/evaluated_grid_2025_Spanish_Grand_Prix.png)
 
-The evaluation compares the simulated qualifying gap distribution against the observed finishing order and lap time gaps. Drivers who participated in practice but did not start qualifying, such as reserve drivers, are excluded from the evaluation. Prediction accuracy and calibration plots are generated in the `plots/` directory alongside the original forecast.
+The evaluation compares the simulated qualifying gap distribution against the observed finishing order and lap time gaps. Drivers who participated in practice but did not start qualifying, such as reserve drivers, are excluded from the evaluation. Prediction accuracy and calibration plots are generated in the `plots/` directory alongside the original forecast. Above, it is observed that the model under-estimates the lap times for a majority of drivers, indicating that a tighter quantile range should be applied for single point forecasting.
 
 ## Discussion
 
