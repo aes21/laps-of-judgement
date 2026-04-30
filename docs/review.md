@@ -16,9 +16,7 @@ Generating accurate predictions of Formula 1 qualifying performance is a non-tri
 
 This report describes the complete modelling pipeline for `laps-of-judgement`, from raw data collection and filtration, through model specification, inference, prediction, and evaluation.
 
----
-
-## `laps-of-judgement`
+## Methodology and Results
 
 ### Data Collection
 
@@ -105,7 +103,7 @@ Qualifying time forecasts are generated from the posterior predictive distributi
 
 Drivers with insufficient practice data to form a reliable posterior are flagged with an asterisk in the output, indicating low confidence in the prediction. The resulting forecast is saved to `plots/` as a visualisation of the simulated qualifying gap distributions.
 
-![Predicted](plots/predicted_grid_2025_Spanish_Grand_Prix.png)
+![Predicted](../plots/predicted_grid_2025_Spanish_Grand_Prix.png)
 
 ```bash
 Rscript R/model.R "Spanish Grand Prix" 2025
@@ -116,11 +114,9 @@ Rscript R/predict.R "Spanish Grand Prix" 2025
 
 For sessions that have already been completed, the model's predictions can be evaluated against the known qualifying results. Qualifying lap data for the relevant season must first be retrieved:
 
-![Evaluation](plots/evaluated_grid_2025_Spanish_Grand_Prix.png)
+![Evaluation](../plots/evaluated_grid_2025_Spanish_Grand_Prix.png)
 
 The evaluation compares the simulated qualifying gap distribution against the observed finishing order and lap time gaps. Drivers who participated in practice but did not start qualifying, such as reserve drivers, are excluded from the evaluation. Prediction accuracy and calibration plots are generated in the `plots/` directory alongside the original forecast.
-
----
 
 ## Discussion
 
