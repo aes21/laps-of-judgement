@@ -109,14 +109,12 @@ p1 <- ggplot(predicted_grid,
     fontface = "bold"
   ) +
   geom_text(
-    aes(
-      label = Confidence,
-      x = ifelse(Gap > 0.35, Gap + 0.05, Gap + 0.15),
-      hjust = ifelse(Gap > 0.35, 1, 0),
-      colour = "black"
-    ),
+    aes(label = Confidence),
+    x = -0.02,
+    hjust = 1,
+    colour = "black",
     family = "mono",
-    size = 3.1,
+    size = 4,
     fontface = "bold"
   ) +
   scale_fill_identity() +
@@ -130,7 +128,8 @@ p1 <- ggplot(predicted_grid,
       NULL
   ) +
   ylab("Driver") +
-  theme_minimal()
+  theme_minimal() +
+  coord_cartesian(clip = "off")
 
 ggsave(plot_path, plot = p1)
 
