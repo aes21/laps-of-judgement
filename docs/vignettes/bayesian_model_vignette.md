@@ -1,16 +1,16 @@
 Bayesian statistics model methodology
 ================
-Compiled: 2026-04-30
+Compiled: 2026-05-07
 
 This vignette highlights the reasoning and methodology used to generate
-probabilistic qualifying predictions within `laps-of-judgement` via
-Bayesian hierarchical modelling.
+qualifying predictions using a probabilistic Bayesian hierarchical
+model.
 
 ### Load in the data
 
 Practice session data for the given year and round is collected via
-`FastF1` using the `python/get_fp_data.py`. You must run this script
-before attempting to generate qualifying time predictions.
+`FastF1` using the `python/get_data.py`. You must run this script before
+attempting to generate qualifying time predictions.
 
 ``` r
 library(brms)
@@ -61,20 +61,17 @@ model_data_q <- filter(quali_data, LapTime_sec <= fastest_lap * 1.07)
 
 ### Bayesian statistics
 
-The initial assumptions (priors) of the Bayesian inference model account
-for the average lap time: `normal(intercept_prior, 5)` and normalises
-erratic swings in lap times using the standard deviation and residual
-error (sigma) of lap times. An `exponential(1)` for the standard
-deviation of group-level effects and residual error gives a mean of ~1
-second; a loose prior to protect against large teammate discrepancies in
-qualifying sessions, although this may get tightened in future.
+The model intercept is centred at the median session lap time
+(`normal(intercept_prior, 5)`) providing an informative but weakly
+regularising prior that prevents prediction of physically impossible lap
+times. Standard deviation and residual error priors use
+`exponential(1)`, placing a mean of approximately one second on both the
+between-driver spread and the within-driver noise, which is a plausible
+loose prior for a modern F1.
 
 Applying a Gaussian likelihood provides a highly robust and
 computationally efficient approximation for valid push laps, which tend
-to cluster tightly towards the mean. While the Gaussian model serves as
-an effective baseline for this statistical inference, future iterations
-exploring Log-Normal or Ex-Gaussian distributions could theoretically
-better capture the inherent right-hand skew of the stochastic data.
+to cluster tightly towards the mean.
 
 ``` r
 # Intercept prior centres the median lap time
@@ -107,16 +104,23 @@ weekend (`log(Weekend_Mins_Elapsed + 1)`) to pull lap times down as the
 grip improves. Individual driver lap times were previously shrunk
 towards a team average to prevent extreme outliers
 (`1 | Team / Driver`). Alternatively, providing each driver with a free
-intercept provides better inter-team pace differentiation:
-`Driver + (1 | Team)`.
+intercept provides better inter-team pace, while still providing
+partial-pooling for per-team random intercepts: `Driver + (1 | Team)`.
 
 The model deploys Markov Chain Monte Carlo (MCMC) algorithms via Stan
-(`backend = "cmdstanr"`), running 4 parallel chains for 4000 iterations
-to explore thousands of valid parameter combinations.
+(`backend = "cmdstanr"`), running 4 parallel chains for 4000 iterations,
+with a 1000 warm up run phase, totalling 1200 total draws.
 
 The posterior distribution output provides a spectrum of probable lap
-times for each driver. Below, the 1st percentile (`0.05`) of each
+times for each driver. Below, the 5th percentile (`0.05`) of each
 driver’s simulated lap distribution is selected in an attempt mimic the
 optimal lap time achievable.
 
 <img src="bayesian_model_vignette_files/figure-gfm/plots-1.png" alt="" width="100%" style="display: block; margin: auto;" />
+
+This posterior distribution justifies the selection of the top 5th
+percentile of lap times for the prediction. Qualifying selects for peak
+pace rather than average pace, as a result, a driver’s fastest lap is
+more representative benchmark for their performance over their mean lap
+times (see the [evaluation
+vignette](docs/vignettes/evaluating_model_vignette.md)).
