@@ -120,6 +120,7 @@ optimal lap time achievable.
 
 This posterior distribution justifies the selection of the top 5th
 percentile of lap times for the prediction. Qualifying selects for peak
-pace rather than average pace, as a result, a driver’s fastest lap is
-more representative benchmark for their performance over their mean lap
-times (see the [evaluation vignette](evaluating_model_vignette.md)).
+performance rather than average pace, as a result, a driver’s fastest
+lap is more representative benchmark for their performance over their
+mean lap times (see the [evaluation
+vignette](evaluating_model_vignette.md)).
