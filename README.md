@@ -3,12 +3,6 @@ A Bayesian hierarchical model for predicting F1 qualifying performace.
 
 ![Latest](latest_prediction.png)
 
-## Methodology
-For a deeper discussion of the methods used, see:
-- [Bayesian statistics modelling vignette](docs/vignettes/bayesian_model_vignette.md).
-- [Model evaluation vignette](docs/vignettes/evaluating_model_vignette.md).
-- [Overview report](docs/review.md).
-
 ## How it works
 Uses free practice session lap time data fetched from [FastF1](https://github.com/theOehrly/Fast-F1) to generate a **probabilistic forecast of qualifying times** before qualifying.
 
@@ -74,5 +68,4 @@ A plot of the simulated qualifying gaps and prediction evaluations are generated
   </tr>
 </table>
 
-> [!NOTE]
-> Drivers that participated in a practice session but not in qualifying (e.g., a reserve driver) are included in simulated predictions, but dropped in any evaluation of the models.
+For a deeper discussion of the methods used, and evaluation of the model's effectiveness, see the [documentation](docs/) directory.
