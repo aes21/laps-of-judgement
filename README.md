@@ -3,6 +3,13 @@ A Bayesian hierarchical model for predicting F1 qualifying performace.
 
 ![Latest](latest_prediction.png)
 
+<details>
+<summary>What do these predictions mean?</summary>
+
+The bars display the gaps of drivers to the fastest predicted lap time (according to their individual 5th percentile of posterior simulations). Drivers marked with `*` had insufficient practice data to provide a high-confident prediction.
+
+</details>
+
 ## How it works
 Uses free practice session lap time data fetched from [FastF1](https://github.com/theOehrly/Fast-F1) to generate a **probabilistic forecast of qualifying times** before qualifying.
 
@@ -15,6 +22,11 @@ Uses free practice session lap time data fetched from [FastF1](https://github.co
 
 ## Getting started
 
+### Prerequisites
+
+- Python (3.14.3)
+- R (4.5.2) - use [`renv`](https://rstudio.github.io/renv/) for package installation
+
 ### Clone the repository
 ```bash
 git clone https://github.com/aes21/laps-of-judgement.git
@@ -25,7 +37,7 @@ cd laps-of-judgement
 Install Python and R environment dependencies.
 
 ```bash
-python -m pip install -r .\requiremnts.txt
+python -m pip install -r .\requirements.txt
 Rscript -e "renv::restore()"
 ```
 
