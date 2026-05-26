@@ -3,8 +3,16 @@
     "Version": "4.5.2",
     "Repositories": [
       {
+        "Name": "stan",
+        "URL": "https://stan-dev.r-universe.dev"
+      },
+      {
+        "Name": "csardi",
+        "URL": "https://gaborcsardi.r-universe.dev"
+      },
+      {
         "Name": "CRAN",
-        "URL": "https://cran.rstudio.com"
+        "URL": "https://cloud.r-project.org"
       }
     ]
   },
