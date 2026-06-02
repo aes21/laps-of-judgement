@@ -30,7 +30,9 @@ data <- read.csv(glue::glue("data/processed/all_p_laps_{year}.csv")) |>
 # Qualifying simulation filter
 # -----------------------------------------------------------------------------
 
-quali_data <- filter_qualifying_laps(data, max_stint = max_stint)
+sprint_flag <- unique(as.logical(data$isSprint))
+
+quali_data <- filter_qualifying_laps(data, max_stint, is_sprint = sprint_flag)
 stopifnot(mean(is.na(data$LapTime_sec)) < 0.1) # stop if too many dropped
 
 # apply 107%
@@ -42,26 +44,7 @@ model_data_q <- filter(quali_data, LapTime_sec <= fastest_lap * 1.07)
 # -----------------------------------------------------------------------------
 
 intercept_prior <- round(median(model_data_q$LapTime_sec, na.rm = TRUE))
-
-fit_quali <- brm(
-  LapTime_sec ~ log(Weekend_Mins_Elapsed + 1) + Driver + (1 | Team),
-  data = model_data_q,
-  family = gaussian(),
-  prior = c(
-    prior_string(paste0("normal(", intercept_prior, ", 5)"),
-                 class = "Intercept"),
-    prior(exponential(1), class = "sd"),
-    prior(exponential(1), class = "sigma")
-  ),
-  chains = 4,
-  iter = 4000,
-  warmup = 1000,
-  cores = detectCores(),
-  threads = threading(max(1, floor(detectCores(
-  ) / 4))),
-  backend = "cmdstanr",
-  stan_model_args = list(stanc_options = list("O1"))
-)
+fit_quali <- fit_model(data = model_data_q, is_sprint = sprint_flag)
 
 # save model
 event_name <- gsub(" ", "_", target_race)

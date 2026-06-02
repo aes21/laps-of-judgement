@@ -33,6 +33,7 @@ def get_session_data(session_type: SessionType, year: int, output_dir: str = "da
                 laps = session.laps.copy()
                 laps["RoundName"] = event_name
                 laps["Session"] = fp
+                laps["isSprint"] = (session.event.EventFormat == 'sprint_qualifying')
                 all_laps.append(laps)
                 print(f" Loaded {event_name} {fp}")
             except ValueError:
