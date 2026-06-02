@@ -21,6 +21,8 @@ parse_lap_times <- function(df) {
 #' Calculate the elapsed time between session start and end for track evolution.
 #'
 #' @param df A data.frame of session laps with 'LapStartDate' as a column name.
+#'
+#' @return A data.frame with Weekend_Mins_Elapsed for track evolution.
 add_elapsed_time <- function(df) {
   df |>
     mutate(Weekend_Mins_Elapsed = as.numeric(difftime(
