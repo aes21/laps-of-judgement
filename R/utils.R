@@ -1,5 +1,7 @@
+library(brms)
 library(dplyr)
 library(lubridate)
+library(parallel)
 library(stringr)
 
 #' Format fastf1 lap time format into readable seconds.
@@ -29,31 +31,122 @@ add_elapsed_time <- function(df) {
 #' Filters for qualifying run identification from practice runs.
 #'
 #' @param df A data.frame of session laps.
-#' @param compound Qualifying tyre compound (defaults to 'SOFT').
 #' @param max_stint Maximum stint length (defaults to '6').
+#' @param is_sprint Indicates whether the weekend format is a sprint.
 #'
 #' @return A filtered data.frame of session laps.
-filter_qualifying_laps <- function(df, compound = "SOFT", max_stint = 6) {
-  df |>
+filter_qualifying_laps <- function(df, max_stint = 6, is_sprint = FALSE) {
+  # pre-processing of lap data
+  df <- df |>
     group_by(.data$Driver, .data$Session, .data$Stint) |>
     mutate(StintLength = n()) |>
     ungroup() |>
     filter(
       .data$TrackStatus == 1,
       .data$IsAccurate == "True",
-      .data$Compound == compound,
-      .data$FreshTyre == "True",
-    ) |>
+    )
+
+  if (is_sprint) {
+    # enlarge data input by selecting the fastest stint
+    df <- df |>
+      filter(.data$Stint == .data$Stint[which.min(.data$LapTime_sec)],
+             .by = .data$Driver)
+  } else {
+    # only select qualifying runs
+    df <- df |>
+      filter(.data$Compound == "SOFT", .data$FreshTyre == "True")
+  }
+
+  # define column factors
+  df <- df |>
     mutate(
       confidence = if_else(.data$StintLength <= max_stint, "", "*"),
       Driver = factor(.data$Driver),
       Team = factor(.data$Team)
-    ) |>
-    group_by(.data$Driver) |>
-    filter(
-      .data$StintLength <= max_stint |
-        (!any(.data$StintLength <= max_stint) & 
-           .data$StintLength == min(.data$StintLength))
-    ) |>
-    ungroup()
+    )
+
+  if (is_sprint) {
+    df <- df |>
+      mutate(
+        Compound = factor(.data$Compound, levels = c("SOFT", "MEDIUM", "HARD")),
+        LapCount = n(),
+        Weighting = sqrt(.data$LapCount) / sqrt(max(.data$LapCount)),
+        .by = .data$Driver
+      )
+  } else {
+    df <- df |>
+      filter(
+        .data$StintLength <= max_stint |
+          (!any(.data$StintLength <= max_stint) &
+             .data$StintLength == min(.data$StintLength))
+      )
+  }
+
+  df
+}
+
+#' Fit the qualifying model.
+#'
+#' @param data Lap time data used as model input.
+#' @param is_sprint Indicates whether the weekend format is a sprint.
+#'
+#' @return A brmsfit object.
+fit_model <- function(data, is_sprint = FALSE) {
+  # intercept
+  intercept_prior <- round(median(data$LapTime_sec, na.rm = TRUE))
+
+  # define model formula and priors
+  if (is_sprint) {
+    model_formula <- bf(
+      LapTime_sec | weights(Weighting) ~
+        log(Weekend_Mins_Elapsed + 1) + Compound + (1 | Team) + (1 | Driver),
+      sigma ~ log(LapCount)
+    )
+
+    model_priors <- c(
+      prior_string(paste0("normal(", intercept_prior, ", 5)"),
+                   class = "Intercept"),
+      prior(exponential(1), class = "sd"),
+      prior(normal(0, 1), class = "b", dpar = "sigma")
+    )
+
+    # medium compound
+    if ("MEDIUM" %in% unique(data$Compound)) {
+      model_priors <- c(model_priors, prior(normal(0.5, 0.3), class = "b",
+                                            coef = "CompoundMEDIUM"))
+    }
+
+    # hard compound
+    if ("HARD" %in% unique(data$Compound)) {
+      model_priors <- c(model_priors, prior(normal(1.0, 0.3), class = "b",
+                                            coef = "CompoundHARD"))
+    }
+
+  } else {
+    model_formula <- bf(
+      LapTime_sec ~ log(Weekend_Mins_Elapsed + 1) + Driver + (1 | Team)
+    )
+
+    model_priors <- c(
+      prior_string(paste0("normal(", intercept_prior, ", 5)"),
+                   class = "Intercept"),
+      prior(exponential(1), class = "sd"),
+      prior(exponential(1), class = "sigma")
+    )
+  }
+
+  brm(
+    formula = model_formula,
+    data = data,
+    family = gaussian(),
+    prior = model_priors,
+    chains = 4,
+    iter = 4000,
+    warmup = 1000,
+    cores = detectCores(),
+    threads = threading(max(1, floor(detectCores(
+    ) / 4))),
+    backend = "cmdstanr",
+    stan_model_args = list(stanc_options = list("O1"))
+  )
 }

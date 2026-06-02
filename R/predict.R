@@ -25,6 +25,8 @@ event_name <- gsub(" ", "_", target_race)
 fit_quali <- readRDS(paste0("outputs/fit_quali_", event_name, ".rds"))
 model_data_q <- readRDS(paste0("outputs/model_data_", event_name, ".rds"))
 
+sprint_flag <- unique(as.logical(model_data_q$isSprint))
+
 # get drivers
 driver_teams <- model_data_q |> select(Driver, Team) |> distinct()
 
@@ -34,6 +36,11 @@ new_quali_data <- data.frame(
   Team = driver_teams$Team,
   Weekend_Mins_Elapsed = max(model_data_q$Weekend_Mins_Elapsed, na.rm = TRUE)
 )
+
+if (sprint_flag) {
+  new_quali_data$Compound = factor("SOFT", levels = c("SOFT", "MEDIUM", "HARD"))
+  new_quali_data$LapCount = max(model_data_q$LapCount, na.rm = TRUE)
+}
 
 # -----------------------------------------------------------------------------
 # Make prediction
