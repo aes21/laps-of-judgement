@@ -38,7 +38,8 @@ new_quali_data <- data.frame(
 )
 
 if (sprint_flag) {
-  new_quali_data$Compound = factor("SOFT", levels = c("SOFT", "MEDIUM", "HARD"))
+  new_quali_data$Compound = factor("SOFT",
+                                   levels = unique(model_data_q$Compound))
   new_quali_data$LapCount = max(model_data_q$LapCount, na.rm = TRUE)
 }
 
