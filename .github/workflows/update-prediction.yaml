@@ -53,6 +53,21 @@ jobs:
       - name: Install R dependencies
         uses: r-lib/actions/setup-renv@v2
 
+      - name: Install C++ toolchain
+        run: sudo apt-get install -y g++ make
+
+      - name: Cache CmdStan
+        id: cache-cmdstan
+        uses: actions/cache@v4
+        with:
+          path: ~/.cmdstan
+          key: cmdstan-${{ runner.os }}-2.35.0
+
+      - name: Install CmdStan
+        if: steps.cache-cmdstan.outputs.cache-hit != 'true'
+        run: |
+          Rscript -e "cmdstanr::install_cmdstan(version = '2.35.0')"
+
       - name: Run prediction script
         run: python python/laps_of_judgement.py
 
