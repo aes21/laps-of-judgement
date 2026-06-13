@@ -3,6 +3,7 @@ library(dplyr)
 library(lubridate)
 library(parallel)
 library(stringr)
+library(tidyr)
 
 #' Format fastf1 lap time format into readable seconds.
 #'
@@ -38,6 +39,25 @@ add_elapsed_time <- function(df) {
 #'
 #' @return A filtered data.frame of session laps.
 filter_qualifying_laps <- function(df, max_stint = 6, is_sprint = FALSE) {
+  # resolve missing data
+  df <- df |>
+    mutate(Team = na_if(.data$Team, "")) |>
+    group_by(.data$Driver) |>
+    fill(.data$Team, .direction = "downup") |>
+    ungroup()
+
+  if (anyNA(df$Team)) {
+    warn_drivers <- df |>
+      filter(is.na(.data$Team)) |>
+      distinct(.data$Driver) |>
+      pull(.data$Driver)
+    warning("Dropping drivers with missing Team identifiers: ",
+            paste(warn_drivers, collapse = ", "))
+
+    df <- df |>
+      filter(!is.na(.data$Team))
+  }
+
   # pre-processing of lap data
   df <- df |>
     group_by(.data$Driver, .data$Session, .data$Stint) |>
