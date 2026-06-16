@@ -6,7 +6,7 @@ A Bayesian hierarchical model for predicting F1 qualifying performace.
 <details>
 <summary>What do these predictions mean?</summary>
 
-The bars display the gaps of drivers to the fastest predicted lap time (according to their individual 5th percentile of posterior simulations). Drivers marked with `*` had insufficient practice data to provide a high-confident prediction.
+The bars display the gaps of drivers to the fastest predicted lap time (according to their individual 5th percentile of posterior simulations). Drivers marked with `*` had insufficient practice data to provide a high-confident prediction. The heatmap marks each driver's mostly likely position based on their probability across the posterior simulations.
 
 </details>
 
