@@ -2,6 +2,7 @@ library(brms)
 library(dplyr)
 library(ggplot2)
 library(tidyr)
+library(patchwork)
 
 # utility functions
 source("R/utils.R")
@@ -140,10 +141,6 @@ p1 <- ggplot(predicted_grid,
   coord_cartesian(clip = "off")
 
 ggsave(plot_path, plot = p1)
-
-if (update_latest) {
-  ggsave("latest_prediction.png")
-}
 
 # save
 out_path <- paste0("outputs/predictions/predicted_grid_",
@@ -315,9 +312,9 @@ p3 <- ggplot(
   geom_tile(colour = "grey50", linewidth = 0.3, width = 1, height = 1) +
   geom_text(
     data = position_probs |>
-      group_by(Position) |>
+      group_by(Driver) |>
       slice_max(Probability, n = 1) |>
-      filter(Probability > 0.05),
+      filter(Probability > 0.1),
     aes(label = scales::percent(Probability, accuracy = 1)),
     colour = "grey20",
     fontface = "bold",
@@ -342,3 +339,14 @@ p3 <- ggplot(
   coord_flip()
 
 ggsave(prob_path, plot = p3)
+
+if (update_latest) {
+  combined_plot <- p1 | p3
+  ggsave(
+    "latest_prediction.png",
+    plot = combined_plot,
+    width = 15,
+    height = 8,
+    dpi = 150
+  )
+}
