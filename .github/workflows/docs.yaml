@@ -52,7 +52,7 @@ jobs:
 
       - name: Run scripts
         run: |
-          python python/get_data.py --year 2025
+          python python/get_data.py --year 2025 --event_name "Spanish Grand Prix"
           Rscript R/model.R "Spanish Grand Prix" 2025
           Rscript R/predict.R "Spanish Grand Prix" 2025
 
