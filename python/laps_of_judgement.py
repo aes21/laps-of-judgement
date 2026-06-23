@@ -4,10 +4,11 @@ import pandas as pd
 import config
 from fastf1 import plotting
 from pathlib import Path
+from typing import Optional
 
 config.init_cache()
 
-def get_completed_events(year: int = None) -> pd.DataFrame:
+def get_completed_events(year: Optional[int] = None) -> pd.DataFrame:
     """
     Retrieve the most recent session.
 
