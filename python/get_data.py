@@ -4,10 +4,11 @@ import argparse
 from config import init_cache, SessionType
 from laps_of_judgement import get_completed_events, get_team_colour
 from pathlib import Path
+from typing import Optional
 
 init_cache()
 
-def get_session_data(session_type: SessionType, year: int, event_name: str = None, output_dir: str = "data/processed") -> None:
+def get_session_data(session_type: SessionType, year: int, event_name: Optional[str] = None, output_dir: str = "data/processed") -> None:
     """
     Retrieve a complete year's free practice session data from fastf1.
 
