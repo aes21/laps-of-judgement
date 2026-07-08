@@ -4,10 +4,11 @@ import pandas as pd
 import config
 from fastf1 import plotting
 from pathlib import Path
+from typing import Optional
 
 config.init_cache()
 
-def get_completed_events(year: int = None) -> pd.DataFrame:
+def get_completed_events(year: Optional[int] = None) -> pd.DataFrame:
     """
     Retrieve the most recent session.
 
@@ -55,8 +56,13 @@ def main():
     event_name = get_completed_events().iloc[-1]["EventName"]
     print(f"Predicting the:{year} {event_name}")
 
+    from get_data import get_session_data
+    from config import SessionType
+
+    print(f"Pulling {year} season data.")
+    get_session_data(SessionType.P, year, event_name)
+
     steps = [
-        ["python", "python/get_data.py", "--year", str(year)],
         ["Rscript", "R/model.R", event_name, str(year)],
         ["Rscript", "R/predict.R", event_name, str(year), "."]
     ]
