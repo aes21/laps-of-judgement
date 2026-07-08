@@ -28,6 +28,8 @@ model_data_q <- readRDS(paste0("outputs/model_data_", event_name, ".rds"))
 
 sprint_flag <- unique(as.logical(model_data_q$isSprint))
 
+constructor_offset <- calculate_constructor_offset(year)
+
 # get drivers
 driver_teams <- model_data_q |> select(Driver, Team) |> distinct()
 
@@ -55,7 +57,8 @@ dropped_levels <- setdiff(levels(new_quali_data$Driver),
 # remove missing drivers
 new_quali_data <- new_quali_data |>
   filter(!Driver %in% dropped_levels) |>
-  mutate(Driver = droplevels(Driver))
+  mutate(Driver = droplevels(Driver)) |>
+  left_join(constructor_offset |> select(Team, PctOffset), by = "Team")
 
 # simulate times
 simulated_quali_laps <- posterior_predict(
@@ -64,11 +67,14 @@ simulated_quali_laps <- posterior_predict(
   allow_new_levels = TRUE
 )
 
+# pace quantile threshold
+pace_probs <- ifelse(sprint_flag == TRUE, 0.01, 0.05)
+
 # generate a predicted grid data.frame
 predicted_grid <- data.frame(
   Driver = new_quali_data$Driver,
   Team = new_quali_data$Team,
-  Predicted_Time = apply(simulated_quali_laps, 2, quantile, probs = 0.05)
+  Predicted_Time = apply(simulated_quali_laps, 2, quantile, probs = pace_probs)
 ) |>
   arrange(Predicted_Time) |>
   mutate(Predicted_Grid_Position = row_number())

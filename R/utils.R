@@ -138,14 +138,23 @@ filter_qualifying_laps <- function(df, max_stint = 6, is_sprint = FALSE) {
 #'
 #' @return A brmsfit object.
 fit_model <- function(data, is_sprint = FALSE) {
-  # intercept
   intercept_prior <- round(median(data$LapTime_sec, na.rm = TRUE))
 
-  # define model formula and priors
+  # Expected seconds-per-percentage-point of constructor offset:
+  # a team X% off the season pace should lose ~X% of a lap.
+  pct_offset_scale <- intercept_prior / 100
+
+  pct_offset_prior <- prior_string(
+    paste0("normal(", round(pct_offset_scale, 2), ", ",
+           round(pct_offset_scale / 2, 2), ")"),
+    class = "b", coef = "PctOffset"
+  )
+
   if (is_sprint) {
     model_formula <- bf(
       LapTime_sec | weights(Weighting) ~
-        log(Weekend_Mins_Elapsed + 1) + Compound + (1 | Team) + (1 | Driver),
+        log(Weekend_Mins_Elapsed + 1) + Compound + PctOffset +
+          (1 | Team) + (1 | Driver),
       sigma ~ log(LapCount)
     )
 
@@ -153,16 +162,14 @@ fit_model <- function(data, is_sprint = FALSE) {
       prior_string(paste0("normal(", intercept_prior, ", 5)"),
                    class = "Intercept"),
       prior(exponential(1), class = "sd"),
-      prior(normal(0, 1), class = "b", dpar = "sigma")
+      prior(normal(0, 1), class = "b", dpar = "sigma"),
+      pct_offset_prior
     )
 
-    # medium compound
     if ("MEDIUM" %in% unique(data$Compound)) {
       model_priors <- c(model_priors, prior(normal(0.5, 0.3), class = "b",
                                             coef = "CompoundMEDIUM"))
     }
-
-    # hard compound
     if ("HARD" %in% unique(data$Compound)) {
       model_priors <- c(model_priors, prior(normal(1.0, 0.3), class = "b",
                                             coef = "CompoundHARD"))
@@ -178,7 +185,8 @@ fit_model <- function(data, is_sprint = FALSE) {
       prior_string(paste0("normal(", intercept_prior, ", 5)"),
                    class = "Intercept"),
       prior(exponential(1), class = "sd"),
-      prior(exponential(1), class = "sigma")
+      prior(exponential(1), class = "sigma"),
+      pct_offset_prior
     )
   }
 
@@ -191,8 +199,7 @@ fit_model <- function(data, is_sprint = FALSE) {
     iter = 4000,
     warmup = 1000,
     cores = detectCores(),
-    threads = threading(max(1, floor(detectCores(
-    ) / 4))),
+    threads = threading(max(1, floor(detectCores() / 4))),
     backend = "cmdstanr",
     stan_model_args = list(stanc_options = list("O1"))
   )
