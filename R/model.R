@@ -32,12 +32,18 @@ data <- read.csv(glue::glue("data/processed/all_p_laps_{year}.csv")) |>
 
 sprint_flag <- unique(as.logical(data$isSprint))
 
+constructor_offset <- calculate_constructor_offset(year)
+
 quali_data <- filter_qualifying_laps(data, max_stint, is_sprint = sprint_flag)
 stopifnot(mean(is.na(data$LapTime_sec)) < 0.1) # stop if too many dropped
 
 # apply 107%
 fastest_lap <- min(quali_data$LapTime_sec)
 model_data_q <- filter(quali_data, LapTime_sec <= fastest_lap * 1.07)
+
+# merge constructor offset
+model_data_q <- model_data_q |>
+  left_join(constructor_offset |> select(Team, PctOffset), by = "Team")
 
 # -----------------------------------------------------------------------------
 # Fit Bayesian model
