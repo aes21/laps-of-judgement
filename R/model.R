@@ -49,7 +49,6 @@ model_data_q <- model_data_q |>
 # Fit Bayesian model
 # -----------------------------------------------------------------------------
 
-intercept_prior <- round(median(model_data_q$LapTime_sec, na.rm = TRUE))
 fit_quali <- fit_model(data = model_data_q, is_sprint = sprint_flag)
 
 # save model
