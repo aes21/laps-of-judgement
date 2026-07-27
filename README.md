@@ -1,5 +1,5 @@
 # laps-of-judgement
-A Bayesian hierarchical model for predicting F1 qualifying performace.
+A Bayesian hierarchical model for predicting F1 qualifying performace. For evaluation of the current model, see the [scoring](docs/vignettes/scoring_model_vignette.md).
 
 ![Latest](latest_prediction.png)
 
