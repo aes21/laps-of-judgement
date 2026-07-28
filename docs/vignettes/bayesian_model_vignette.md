@@ -1,6 +1,6 @@
 Bayesian statistics model methodology
 ================
-Compiled: 2026-07-24
+Compiled: 2026-07-28
 
 This vignette highlights the reasoning and methodology used to generate
 qualifying predictions using a probabilistic Bayesian hierarchical
@@ -118,9 +118,9 @@ function (data, is_sprint = FALSE)
             log(Weekend_Mins_Elapsed + 1) + Compound + PctOffset + 
                 (1 | Team) + (1 | Driver), sigma ~ log(LapCount))
         model_priors <- c(prior_string(paste0("normal(", intercept_prior, 
-            ", 5)"), class = "Intercept"), prior(exponential(1), 
-            class = "sd"), prior(normal(0, 1), class = "b", dpar = "sigma"), 
-            pct_offset_prior)
+            ", 5)"), class = "Intercept"), prior(student_t(3, 
+            0, 2), class = "sd"), prior(normal(0, 1), class = "b", 
+            dpar = "sigma"), pct_offset_prior)
         if ("MEDIUM" %in% unique(data$Compound)) {
             model_priors <- c(model_priors, prior(normal(0.5, 
                 0.3), class = "b", coef = "CompoundMEDIUM"))
@@ -134,8 +134,8 @@ function (data, is_sprint = FALSE)
         model_formula <- bf(LapTime_sec ~ log(Weekend_Mins_Elapsed + 
             1) + Driver + PctOffset + (1 | Team))
         model_priors <- c(prior_string(paste0("normal(", intercept_prior, 
-            ", 5)"), class = "Intercept"), prior(exponential(1), 
-            class = "sd"), prior(exponential(1), class = "sigma"), 
+            ", 5)"), class = "Intercept"), prior(student_t(3, 
+            0, 2), class = "sd"), prior(exponential(1), class = "sigma"), 
             pct_offset_prior)
     }
     brm(formula = model_formula, data = data, family = gaussian(), 
@@ -197,7 +197,7 @@ The model intercept is centred at the median collected lap time
 regularising prior that prevents prediction of physically impossible lap
 times.
 
-The `PctOffset` prior, is derived from the track-specific intercept to
+The `PctOffset` prior is derived from the track-specific intercept to
 ensure the season-long constructor deficit scales proportionally to the
 lap time duration (`intercept_prior / 100`).
 
@@ -206,6 +206,73 @@ within the input data. In these cases, a physical constraint -
 `normal(0.5, 0.3)` for Medium and `normal(1.0, 0.3)` Hard compounds,
 respectively - are applied to represent the expected lap time delta
 relative to the Soft.
+
+The standard deviation (`prior(student_t(3, 0, 2), class = "sd")`) for
+group-level effects adopts a heavy-tailed distribution. This approach
+allows the model to remain flexible and capture weekend-specific
+deviations of a constructor’s pace against the expected historical
+baseline (defined by the strong, regularising `PctOffset`).
+
+Diagnostic evaluation confirms the intended behaviour of this strategy.
+The vast majority of driver fixed effects and team random effects
+exhibit robust posteriors, showing little sensitivity to either the
+priors or the likelihood.
+
+***Prior Sensitivity Diagnostics***
+
+| variable | prior | likelihood | diagnosis |
+|:---|---:|---:|:---|
+| b_Intercept | 0.0279980 | 0.0372166 | \- |
+| b_logWeekend_Mins_ElapsedP1 | 0.0036424 | 0.1201005 | \- |
+| b_DriverALO | 0.0238017 | 0.0840650 | \- |
+| b_DriverANT | 0.0312885 | 0.0417968 | \- |
+| b_DriverBEA | 0.0372015 | 0.0311784 | \- |
+| b_DriverBOR | 0.0229960 | 0.0331278 | \- |
+| b_DriverCOL | 0.0267757 | 0.0702216 | \- |
+| b_DriverGAS | 0.0264948 | 0.0673541 | \- |
+| b_DriverHAD | 0.0226692 | 0.0440750 | \- |
+| b_DriverHAM | 0.0235524 | 0.0423113 | \- |
+| b_DriverHIR | 0.0380969 | 0.0333448 | \- |
+| b_DriverHUL | 0.0233434 | 0.0329127 | \- |
+| b_DriverLAW | 0.0228163 | 0.0410576 | \- |
+| b_DriverLEC | 0.0235054 | 0.0425976 | \- |
+| b_DriverNOR | 0.0285566 | 0.0517479 | \- |
+| b_DriverOCO | 0.0363729 | 0.0307309 | \- |
+| b_DriverPIA | 0.0287845 | 0.0465329 | \- |
+| b_DriverRUS | 0.0313607 | 0.0425467 | \- |
+| b_DriverSAI | 0.0055903 | 0.1799793 | \- |
+| b_DriverSTR | 0.0240801 | 0.0801802 | \- |
+| b_DriverTSU | 0.0280089 | 0.1072568 | \- |
+| b_DriverVER | 0.0276251 | 0.1064764 | \- |
+| b_PctOffset | 0.0805458 | 0.0367468 | potential strong prior / weak likelihood |
+| sd_Team\_\_Intercept | 0.1082407 | 0.1062946 | potential prior-data conflict |
+| sigma | 0.0127421 | 0.6358386 | \- |
+| Intercept | 0.0177736 | 0.1154031 | \- |
+| r_Team\[Alpine,Intercept\] | 0.0259039 | 0.0857941 | \- |
+| r_Team\[Aston.Martin,Intercept\] | 0.0254107 | 0.0836116 | \- |
+| r_Team\[Ferrari,Intercept\] | 0.0217237 | 0.0257845 | \- |
+| r_Team\[Haas.F1.Team,Intercept\] | 0.0438221 | 0.0479657 | \- |
+| r_Team\[Kick.Sauber,Intercept\] | 0.0271154 | 0.0519769 | \- |
+| r_Team\[McLaren,Intercept\] | 0.0240661 | 0.0318159 | \- |
+| r_Team\[Mercedes,Intercept\] | 0.0313605 | 0.0387786 | \- |
+| r_Team\[Racing.Bulls,Intercept\] | 0.0216517 | 0.0546137 | \- |
+| r_Team\[Red.Bull.Racing,Intercept\] | 0.0258506 | 0.0909589 | \- |
+| r_Team\[Williams,Intercept\] | 0.0294176 | 0.0462919 | \- |
+
+Strong prior / weak likelihood for `b_PctOffset` confirms the prior is
+applying tight constraints on the lap time data based on the historic
+baseline to prevent overfitting. A prior-data conflict flag on
+`sd_Team__Intercept` is expected in hierarchical models with a limited
+number of groups that subsequently struggles to define population-level
+variance, causing a heavy reliance on the flexibility of the `student_t`
+prior.
+
+Finally, residual variance is constrained using an `expontential(1)`
+prior, to reflect the fact that lap-to-lap variance is expected to be
+small for peak qualifying laps. As discussed, sprint weekend formats
+remodel this variance as a function of the lap count, with an
+uninformative normal prior, allowing uncertainty to scale dynamically
+with the limited available data.
 
 ### Generating qualifying predictions
 
