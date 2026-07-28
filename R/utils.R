@@ -161,7 +161,7 @@ fit_model <- function(data, is_sprint = FALSE) {
     model_priors <- c(
       prior_string(paste0("normal(", intercept_prior, ", 5)"),
                    class = "Intercept"),
-      prior(exponential(1), class = "sd"),
+      prior(student_t(3, 0, 2), class = "sd"),
       prior(normal(0, 1), class = "b", dpar = "sigma"),
       pct_offset_prior
     )
@@ -184,7 +184,7 @@ fit_model <- function(data, is_sprint = FALSE) {
     model_priors <- c(
       prior_string(paste0("normal(", intercept_prior, ", 5)"),
                    class = "Intercept"),
-      prior(exponential(1), class = "sd"),
+      prior(student_t(3, 0, 2), class = "sd"),
       prior(exponential(1), class = "sigma"),
       pct_offset_prior
     )
