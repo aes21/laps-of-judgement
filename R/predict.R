@@ -67,11 +67,13 @@ simulated_quali_laps <- posterior_predict(
   allow_new_levels = TRUE
 )
 
+probs_threshold <- ifelse(sprint_flag, 0.01, 0.05)
+
 # generate a predicted grid data.frame
 predicted_grid <- data.frame(
   Driver = new_quali_data$Driver,
   Team = new_quali_data$Team,
-  Predicted_Time = apply(simulated_quali_laps, 2, quantile, probs = 0.05)
+  Predicted_Time = apply(simulated_quali_laps, 2, quantile, probs = probs_threshold)
 ) |>
   arrange(Predicted_Time) |>
   mutate(Predicted_Grid_Position = row_number())
