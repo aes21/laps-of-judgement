@@ -1,0 +1,9 @@
+services:
+  forecast:
+    build: .
+    image: laps-of-judgement:local
+    working_dir: /app
+    volumes:
+      - ./data:/app/data
+      - ./outputs:/app/outputs
+      - ./plots:/app/plots

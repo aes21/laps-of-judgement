@@ -17,8 +17,10 @@ The approach uses filtered (see the [model](docs/vignettes/bayesian_model_vignet
 
 ### Prerequisites
 
-- Python (3.14.3)
-- R (4.5.2) - use [`renv`](https://rstudio.github.io/renv/) for package installation
+Choose one of the following execution environments:
+
+- **Docker** (recommended).
+- **Local**: Python (3.14.3), R (4.52), and CmdStan.
 
 ### Clone the repository
 ```bash
@@ -27,18 +29,33 @@ cd laps-of-judgement
 ```
 
 ### Installation
-Install Python and R environment dependencies.
+
+**Docker:**
+
+```bash
+docker compose build
+```
+
+**Local:**
 
 ```bash
 python -m pip install -r .\requirements.txt
 Rscript -e "renv::restore()"
 ```
 
+For local execution, ensure that the CmdStan toolchain is also installed.
+
 ### Fetch data
 Example using 2025 season data.
 
+> [!NOTE]
+> To run the following workflow within Docker, prefix commands with `docker compose run --rm forecast`.
+
 ```bash
-python python/get_data.py --year 2025
+python python/get_data.py --year 2025 --session_type P
+
+# build constructor offset from qualifying data
+python python/get_data.py --year 2025 --session_type Q
 ```
 
 You only need to run this line once for a given year, the subsequently created `data` directory will contain the cached data required to complete the rest of the workflow for any given event of that season.
