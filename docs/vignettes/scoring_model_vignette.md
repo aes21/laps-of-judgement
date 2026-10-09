@@ -1,6 +1,6 @@
 Model evaluation and scoring methodology
 ================
-Compiled: 2026-07-24
+Compiled: 2026-09-30
 
 This vignette highlights methodology for evaluating the accuracy of the
 Bayesian probabilistic model distribution of predicted lap times across
@@ -140,7 +140,7 @@ season_crps <- evaluated_events |>
 
 <img src="scoring_model_vignette_files/figure-gfm/plot_crps-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
-This represents a global season average for model deviation of 0.69
+This represents a global season average for model deviation of 0.689
 seconds per lap.
 
 Breaking this down further, analysis of driver level CRPS, shows that,
@@ -155,25 +155,25 @@ Hadjar) are, as expected, among the most difficult to predict.
 
 | Driver | Team            | Season Mean CRPS |
 |:-------|:----------------|:----------------:|
-| ALB    | Williams        |      0.475       |
-| ALO    | Aston Martin    |      0.532       |
-| STR    | Aston Martin    |      0.557       |
-| OCO    | Haas F1 Team    |      0.568       |
-| HUL    | Kick Sauber     |      0.596       |
-| LAW    | Racing Bulls    |      0.631       |
-| TSU    | Red Bull Racing |      0.643       |
-| HAM    | Ferrari         |      0.673       |
+| ALB    | Williams        |      0.472       |
+| ALO    | Aston Martin    |      0.525       |
+| STR    | Aston Martin    |      0.555       |
+| OCO    | Haas F1 Team    |      0.566       |
+| HUL    | Kick Sauber     |      0.594       |
+| LAW    | Racing Bulls    |      0.630       |
+| TSU    | Red Bull Racing |      0.641       |
+| HAM    | Ferrari         |      0.672       |
 | SAI    | Williams        |      0.678       |
-| LEC    | Ferrari         |      0.701       |
-| BEA    | Haas F1 Team    |      0.731       |
-| RUS    | Mercedes        |      0.744       |
-| VER    | Red Bull Racing |      0.746       |
-| BOR    | Kick Sauber     |      0.771       |
-| HAD    | Racing Bulls    |      0.774       |
-| ANT    | Mercedes        |      0.783       |
-| GAS    | Alpine          |      0.803       |
-| PIA    | McLaren         |      0.807       |
-| NOR    | McLaren         |      0.811       |
+| LEC    | Ferrari         |      0.699       |
+| BEA    | Haas F1 Team    |      0.726       |
+| RUS    | Mercedes        |      0.743       |
+| VER    | Red Bull Racing |      0.748       |
+| BOR    | Kick Sauber     |      0.772       |
+| ANT    | Mercedes        |      0.777       |
+| HAD    | Racing Bulls    |      0.779       |
+| PIA    | McLaren         |      0.804       |
+| GAS    | Alpine          |      0.806       |
+| NOR    | McLaren         |      0.813       |
 | LAW    | Red Bull Racing |        NA        |
 | TSU    | Racing Bulls    |        NA        |
 | DOO    | Alpine          |        NA        |
@@ -195,16 +195,16 @@ performance out of a difficult car.
 
 | Team            | Team Mean CRPS |
 |:----------------|:--------------:|
-| Aston Martin    |     0.545      |
-| Williams        |     0.577      |
-| Haas F1 Team    |     0.649      |
+| Aston Martin    |     0.540      |
+| Williams        |     0.575      |
+| Haas F1 Team    |     0.646      |
 | Kick Sauber     |     0.683      |
-| Ferrari         |     0.687      |
+| Ferrari         |     0.686      |
 | Red Bull Racing |     0.695      |
-| Racing Bulls    |     0.703      |
-| Mercedes        |     0.763      |
-| Alpine          |     0.803      |
-| McLaren         |     0.809      |
+| Racing Bulls    |     0.704      |
+| Mercedes        |     0.760      |
+| Alpine          |     0.806      |
+| McLaren         |     0.808      |
 
 ### Percentile Point Prediction Accuracy
 
@@ -264,30 +264,46 @@ season_errors_long <- season_errors |>
 <img src="scoring_model_vignette_files/figure-gfm/plot_magnitude-1.png" alt="" width="100%" style="display: block; margin: auto;" />
 
 Over the course of the 2025 season, the percentile point predictions
-yielded a global average MAE of 1.459 seconds, with an RMSE of 1.577
-seconds. The sprint races have a marked impact on these predictions
+yielded a global average MAE of 1.456 seconds, with an RMSE of 1.575
+seconds. The sprint races have a marked impact on these predictions:
 
 ***Average MAE and RMSE of Weekend Format Point Prediction Accuracy***
 
 | Format              | Average MAE | Average RMSE |
 |:--------------------|:-----------:|:------------:|
-| Sprint (1st %ile)   |    1.144    |    1.231     |
-| Standard (5th %ile) |    0.589    |    0.708     |
+| Sprint (1st %ile)   |    1.128    |    1.221     |
+| Standard (5th %ile) |    0.588    |    0.708     |
 
 The significant in accuracy between event formats highlights a clear
 calibration issue when applying the model to sprint weekends. On
 standard weekends, the 5th percentile predictions yield a robust MAE of
-0.589 seconds and a RMSE of 0.708 seconds. The MAE demonstrates that the
+0.588 seconds and a RMSE of 0.708 seconds. The MAE demonstrates that the
 model is, on average, within half a second of the true lap time, while
 the tight margin between the MAE and RMSE indicates a stable baseline
 with very few extreme outlier misses.
 
 In contrast, sprint weekends suffer a severe degradation in precision,
-with MAE and RMSE inflating to 1.144 and 1.231 seconds, respectively
+with MAE and RMSE inflating to 1.128 and 1.221 seconds, respectively
 (although significantly influenced by the Chinese Grand Prix). Because
 sprint weekends offer only a single practice session, the model’s prior
 information likely severely widens the distribution of posterior
 forecast, leading to inaccurate point predictions.
+
+### Pole Lap Time Differences
+
+The accuracy of peak lap time performance the model was able to infer
+was evaluated by calculating the difference between the actual pole time
+and the minimum point prediction of the model per event of the 2025
+season.
+
+<img src="scoring_model_vignette_files/figure-gfm/plot_pole_performance-1.png" alt="" width="100%" style="display: block; margin: auto;" />
+
+Disregarding the Las Vegas Grand Prix, which was run under wet
+qualifying conditions unaccounted for by the model, the median of the
+absolute difference between actual and predicted pole times was: 0.467
+seconds. Again, sprint weekends display more elevated deltas, driven by
+a severe lack of relevant data input. In all but two cases, the model
+underperforms the eventual pole time, indicating a conservative model.
 
 <hr>
 
@@ -309,9 +325,9 @@ function (data, is_sprint = FALSE)
             log(Weekend_Mins_Elapsed + 1) + Compound + PctOffset + 
                 (1 | Team) + (1 | Driver), sigma ~ log(LapCount))
         model_priors <- c(prior_string(paste0("normal(", intercept_prior, 
-            ", 5)"), class = "Intercept"), prior(exponential(1), 
-            class = "sd"), prior(normal(0, 1), class = "b", dpar = "sigma"), 
-            pct_offset_prior)
+            ", 5)"), class = "Intercept"), prior(student_t(3, 
+            0, 2), class = "sd"), prior(normal(0, 1), class = "b", 
+            dpar = "sigma"), pct_offset_prior)
         if ("MEDIUM" %in% unique(data$Compound)) {
             model_priors <- c(model_priors, prior(normal(0.5, 
                 0.3), class = "b", coef = "CompoundMEDIUM"))
@@ -325,8 +341,8 @@ function (data, is_sprint = FALSE)
         model_formula <- bf(LapTime_sec ~ log(Weekend_Mins_Elapsed + 
             1) + Driver + PctOffset + (1 | Team))
         model_priors <- c(prior_string(paste0("normal(", intercept_prior, 
-            ", 5)"), class = "Intercept"), prior(exponential(1), 
-            class = "sd"), prior(exponential(1), class = "sigma"), 
+            ", 5)"), class = "Intercept"), prior(student_t(3, 
+            0, 2), class = "sd"), prior(exponential(1), class = "sigma"), 
             pct_offset_prior)
     }
     brm(formula = model_formula, data = data, family = gaussian(), 
