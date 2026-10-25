@@ -69,6 +69,10 @@ jobs:
           Rscript -e "cmdstanr::install_cmdstan(version = '2.35.0')"
 
       - name: Run prediction script
+        env:
+          F1_USERNAME: ${{ secrets.F1_USERNAME }}
+          F1_PASSWORD: ${{ secrets.F1_PASSWORD }}
+          FASTF1_AUTH_METHOD: password
         run: python python/laps_of_judgement.py
 
       - name: Commit and push updated prediction
